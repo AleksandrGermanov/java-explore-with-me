@@ -39,7 +39,7 @@ public class StatsViewRepositoryMethodsTest {
         Assertions.assertEquals(List.of(view), endpointHitRepository.getViewListForAllUrisNotUniqueIp(start, end));
 
         EndpointHit hit2 = new EndpointHit(null, "app", "/uri", "0.0.0.0", end);
-        view.setCount(2L);
+        view.setHits(2L);
         endpointHitRepository.save(hit2);
         Assertions.assertEquals(List.of(view), endpointHitRepository.getViewListForAllUrisNotUniqueIp(start, end));
 
@@ -54,7 +54,7 @@ public class StatsViewRepositoryMethodsTest {
         Assertions.assertEquals(List.of(view), endpointHitRepository.getViewListForAllUrisUniqueIp(start, end));
 
         EndpointHit hit2 = new EndpointHit(null, "app", "/uri", "0.0.0.1", end);
-        view.setCount(2L);
+        view.setHits(2L);
         endpointHitRepository.save(hit2);
         Assertions.assertEquals(List.of(view), endpointHitRepository.getViewListForAllUrisUniqueIp(start, end));
 
@@ -74,7 +74,7 @@ public class StatsViewRepositoryMethodsTest {
                 endpointHitRepository.getViewListForSelectedUrisNotUniqueIp(start, end, uris));
 
         EndpointHit hit2 = new EndpointHit(null, "app", "/uri", "0.0.0.0", end);
-        view.setCount(2L);
+        view.setHits(2L);
         endpointHitRepository.save(hit2);
         Assertions.assertEquals(List.of(view),
                 endpointHitRepository.getViewListForSelectedUrisNotUniqueIp(start, end, uris));
@@ -93,7 +93,7 @@ public class StatsViewRepositoryMethodsTest {
                 endpointHitRepository.getViewListForSelectedUrisUniqueIp(start, end, uris));
 
         EndpointHit hit2 = new EndpointHit(null, "app", "/uri", "0.0.0.1", end);
-        view.setCount(2L);
+        view.setHits(2L);
         endpointHitRepository.save(hit2);
         Assertions.assertEquals(List.of(view),
                 endpointHitRepository.getViewListForSelectedUrisUniqueIp(start, end, uris));

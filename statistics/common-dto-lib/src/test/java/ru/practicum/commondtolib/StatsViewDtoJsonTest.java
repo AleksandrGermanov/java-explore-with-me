@@ -32,6 +32,6 @@ public class StatsViewDtoJsonTest {
         assertThat(content).extractingJsonPathMapValue("$").isNotEmpty();
         assertThat(content).extractingJsonPathStringValue("$.app").isEqualTo(dto.getApp());
         assertThat(content).extractingJsonPathStringValue("$.uri").isEqualTo(dto.getUri());
-        assertThat(content).extractingJsonPathNumberValue("$.count").isEqualTo(1);
+        assertThat(content).extractingJsonPathNumberValue("$.hits").isEqualTo(1);
     }
 }

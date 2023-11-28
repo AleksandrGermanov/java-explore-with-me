@@ -21,7 +21,8 @@ public class StatsViewRepositoryImpl implements StatsViewRepository {
                 + "from EndpointHit as eh "
                 + "where eh.timestamp >= :start "
                 + "and eh.timestamp <= :end "
-                + "group by eh.uri, eh.app";
+                + "group by eh.uri, eh.app "
+                + "order by hits desc";
         return entityManager
                 .createQuery(allUrisNotUniqueIp, Tuple.class)
                 .setParameter("start", start)
@@ -38,7 +39,8 @@ public class StatsViewRepositoryImpl implements StatsViewRepository {
                 + "from EndpointHit as eh "
                 + "where eh.timestamp >= :start "
                 + "and eh.timestamp <= :end "
-                + "group by eh.uri, eh.app";
+                + "group by eh.uri, eh.app "
+                + "order by hits desc";
         return entityManager
                 .createQuery(allUrisUniqueIp, Tuple.class)
                 .setParameter("start", start)
@@ -57,7 +59,8 @@ public class StatsViewRepositoryImpl implements StatsViewRepository {
                 + "where eh.timestamp >= :start "
                 + "and eh.timestamp <= :end "
                 + "and eh.uri in :uris "
-                + "group by eh.uri, eh.app";
+                + "group by eh.uri, eh.app "
+                + "order by hits desc";
         return entityManager
                 .createQuery(selectedUrisNotUniqueIp, Tuple.class)
                 .setParameter("start", start)
@@ -77,7 +80,8 @@ public class StatsViewRepositoryImpl implements StatsViewRepository {
                 + "where eh.timestamp >= :start "
                 + "and eh.timestamp <= :end "
                 + "and eh.uri in :uris "
-                + "group by eh.uri, eh.app";
+                + "group by eh.uri, eh.app "
+                + "order by hits desc";
         return entityManager
                 .createQuery(selectedUrisUniqueIp, Tuple.class)
                 .setParameter("start", start)
