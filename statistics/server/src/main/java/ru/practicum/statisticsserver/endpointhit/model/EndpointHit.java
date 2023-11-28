@@ -20,10 +20,13 @@ import java.time.LocalDateTime;
 public class EndpointHit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
     @NotNull
+    @Column(name = "app", nullable = false)
     private String app;
     @NotNull
+    @Column(name = "uri", nullable = false)
     private String uri;
     @NotNull
     @Pattern(message = "Введенный ip должен соответствовать формату '0-255.0-255.0-255.0-255'.",
@@ -31,9 +34,10 @@ public class EndpointHit {
                     + "(\\d{1,2}|[0-1]\\d{2}|2[0-4]\\d|25[0-5])\\."
                     + "(\\d{1,2}|[0-1]\\d{2}|2[0-4]\\d|25[0-5])\\."
                     + "(\\d{1,2}|[0-1]\\d{2}|2[0-4]\\d|25[0-5])")
+    @Column(name = "ip", nullable = false)
     private String ip;
     @NotNull
     @PastOrPresent
-    @Column(name = "time_stamp")
+    @Column(name = "time_stamp", nullable = false)
     private LocalDateTime timestamp;
 }

@@ -32,7 +32,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
     @Override
     public List<StatsViewDto> retrieveStatsViewList(LocalDateTime start, LocalDateTime end,
                                                     @Nullable List<String> uris, boolean unique) {
-        return getViewListForGivenParams(start, end, uris, unique) == null ? Collections.emptyList()
+        return getViewListForGivenParams(start, end, uris, unique).equals(Collections.emptyList()) ? Collections.emptyList()
                 : getViewListForGivenParams(start, end, uris, unique).stream()
                 .map(statsViewMapper::statsViewToDto)
                 .collect(Collectors.toList());
@@ -74,12 +74,10 @@ public class EndpointHitServiceImpl implements EndpointHitService {
      * не соответствующих ожидаемым и, например, перепроверить правильность переданного URI.
      */
     private List<StatsView> pasteNullObjectForDefinedUrisIfCountIs0(List<StatsView> result, List<String> uris) {
-        List<StatsView> results = result == null
-                ? new ArrayList<>()
-                : result;
+        List<StatsView> results = new ArrayList<>(result);
 
-        Set<String> resultUris = results.isEmpty() ? Collections.emptySet()
-                : results.stream()
+        Set<String> resultUris = result.isEmpty() ? Collections.emptySet()
+                : result.stream()
                 .map(StatsView::getUri)
                 .collect(Collectors.toSet());
         uris.forEach(uri -> {

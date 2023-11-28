@@ -77,8 +77,9 @@ public class EndpointHitServiceImplTest {
     }
 
     @Test
-    public void methodRetrieveStatsViewWithParamsStartEndNullFalseWhenRepositoryReturnsNullReturnsEmptyList() {
-        when(endpointHitRepository.getViewListForAllUrisNotUniqueIp(start, end)).thenReturn(null);
+    public void methodRetrieveStatsViewWithParamsStartEndNullFalseWhenRepositoryReturnsEmptyListReturnsEmptyList() {
+        when(endpointHitRepository.getViewListForAllUrisNotUniqueIp(start, end))
+                .thenReturn(Collections.emptyList());
 
         Assertions.assertEquals(Collections.emptyList(),
                 service.retrieveStatsViewList(start, end, null, false));
@@ -93,8 +94,9 @@ public class EndpointHitServiceImplTest {
     }
 
     @Test
-    public void methodRetrieveStatsViewWithParamsStartEndNullTrueWhenRepositoryReturnsNullReturnsEmptyList() {
-        when(endpointHitRepository.getViewListForAllUrisUniqueIp(start, end)).thenReturn(null);
+    public void methodRetrieveStatsViewWithParamsStartEndNullTrueWhenRepositoryReturnsEmptyListReturnsEmptyList() {
+        when(endpointHitRepository.getViewListForAllUrisUniqueIp(start, end))
+                .thenReturn(Collections.emptyList());
 
         Assertions.assertEquals(Collections.emptyList(),
                 service.retrieveStatsViewList(start, end, null, true));
@@ -109,11 +111,12 @@ public class EndpointHitServiceImplTest {
     }
 
     @Test
-    public void methodRetrieveStatsViewWithParamsStartEndUrisFalseWhenRepositoryReturnsNullReturnsViewDtoList() {
+    public void methodRetrieveStatsViewWithParamsStartEndUrisFalseWhenRepositoryReturnsEmptyListReturnsViewDtoList() {
         StatsView nullValue = new StatsView("stats-server-null-value", "/uri", 0L);
         StatsViewDto nullValueDto = new StatsViewDto("stats-server-null-value", "/uri", 0L);
 
-        when(endpointHitRepository.getViewListForSelectedUrisNotUniqueIp(start, end, uris)).thenReturn(null);
+        when(endpointHitRepository.getViewListForSelectedUrisNotUniqueIp(start, end, uris))
+                .thenReturn(Collections.emptyList());
         when(statsViewMapper.statsViewToDto(nullValue)).thenReturn(nullValueDto);
 
         Assertions.assertEquals(List.of(nullValueDto), service.retrieveStatsViewList(start, end, uris, false));
@@ -128,11 +131,12 @@ public class EndpointHitServiceImplTest {
     }
 
     @Test
-    public void methodRetrieveStatsViewWithParamsStartEndUrisTrueWhenRepositoryReturnsNullReturnsViewDtoList() {
+    public void methodRetrieveStatsViewWithParamsStartEndUrisTrueWhenRepositoryReturnsEmptyListReturnsViewDtoList() {
         StatsView nullValue = new StatsView("stats-server-null-value", "/uri", 0L);
         StatsViewDto nullValueDto = new StatsViewDto("stats-server-null-value", "/uri", 0L);
 
-        when(endpointHitRepository.getViewListForSelectedUrisUniqueIp(start, end, uris)).thenReturn(null);
+        when(endpointHitRepository.getViewListForSelectedUrisUniqueIp(start, end, uris))
+                .thenReturn(Collections.emptyList());
         when(statsViewMapper.statsViewToDto(nullValue)).thenReturn(nullValueDto);
 
         Assertions.assertEquals(List.of(nullValueDto), service.retrieveStatsViewList(start, end, uris, true));
