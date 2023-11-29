@@ -1,0 +1,10 @@
+--TODO удалить первую инструкцию при переносе в прод.
+DROP TABLE IF EXISTS endpoint_hit;
+
+CREATE TABLE IF NOT EXISTS endpoint_hit(
+id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+app VARCHAR(64) NOT NULL,
+uri VARCHAR(128) NOT NULL,
+ip VARCHAR(64) NOT NULL,
+time_stamp TIMESTAMP NOT NULL
+);
