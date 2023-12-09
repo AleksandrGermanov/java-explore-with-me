@@ -2,6 +2,7 @@ package ru.practicum.endpointhitclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,16 +28,15 @@ import java.util.Map;
 public class EndpointHitClientImpl implements EndpointHitClient {
     private final String app;
     private final String statsServerUri;
-    private final RestTemplate restTemplate;
+    @Getter
+    private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper;
 
-    public EndpointHitClientImpl(@Value("${app.name}") String app,
+    public EndpointHitClientImpl(@Value("${app.name}")String app,
                                  @Value("${stats-server.uri}") String statsServerUri,
-                                 RestTemplate restTemplate,
                                  ObjectMapper objectMapper) {
         this.app = app;
         this.statsServerUri = statsServerUri;
-        this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
     }
 

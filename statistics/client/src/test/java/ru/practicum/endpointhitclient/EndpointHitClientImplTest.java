@@ -25,11 +25,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @ExtendWith(MockitoExtension.class)
 public class EndpointHitClientImplTest {
-    private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final EndpointHitClientImpl endpointHitClientImpl = new EndpointHitClientImpl("app",
             "http://root.root",
-            restTemplate, objectMapper);
+            objectMapper);
     private MockRestServiceServer mockServer;
     private LocalDateTime start;
     private LocalDateTime end;
@@ -38,7 +37,7 @@ public class EndpointHitClientImplTest {
 
     @BeforeEach
     public void setup() {
-        mockServer = MockRestServiceServer.createServer(restTemplate);
+        mockServer = MockRestServiceServer.createServer(endpointHitClientImpl.getRestTemplate());
         start = LocalDateTime.of(2023, 1, 1, 1, 1, 1);
         end = LocalDateTime.of(2023, 2, 2, 2, 2, 2);
         dto = new EndpointHitDto(null, "app", "/uri", "0.0.0.0", start);
