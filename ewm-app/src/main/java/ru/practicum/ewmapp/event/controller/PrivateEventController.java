@@ -25,40 +25,40 @@ public class PrivateEventController {
 
     @GetMapping
     public List<EventShortDto> findAllByUser(@PathVariable Long userId,
-                                             @RequestParam @PositiveOrZero @DefaultValue(value = "0") Integer from,
-                                             @RequestParam @Positive @DefaultValue(value = "10") Integer size){
+                                             @RequestParam(defaultValue = "0") @PositiveOrZero  Integer from,
+                                             @RequestParam(defaultValue = "10") @Positive  Integer size) {
         return eventService.findAllByUser(userId, from, size);
     }
 
     @PostMapping
     public EventFullDto createEvent(@PathVariable Long userId,
-                                    @RequestBody @Valid NewEventDto dto){
+                                    @RequestBody @Valid NewEventDto dto) {
         return eventService.createEvent(userId, dto);
     }
 
     @GetMapping("/{eventId}")
     public EventFullDto findByUserAndById(@PathVariable Long userId,
-                                          @PathVariable Long eventId){
+                                          @PathVariable Long eventId) {
         return eventService.findByUserAndById(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByUserRequest(@PathVariable Long userId,
                                                  @PathVariable Long eventId,
-                                                 @RequestBody UpdateEventUserRequest request){
+                                                 @RequestBody UpdateEventUserRequest request) {
         return eventService.updateEventByUserRequest(userId, eventId, request);
     }
 
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> findAllRequestsForEvent(@PathVariable Long userId,
-                                                                 @PathVariable Long eventId){
+                                                                 @PathVariable Long eventId) {
         return eventService.findAllRequestsForEvent(userId, eventId);
     }
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateStatusForEventRequests(@PathVariable Long userId,
                                                                        @PathVariable Long eventId,
-                                                                       @RequestBody EventRequestStatusUpdateRequest updateRequest){
+                                                                       @RequestBody EventRequestStatusUpdateRequest updateRequest) {
         return eventService.updateStatusForEventRequests(userId, eventId, updateRequest);
     }
 }

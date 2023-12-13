@@ -15,7 +15,7 @@ public class UserMapperImpl implements UserMapper {
         return new UserShortDto(user.getId(), user.getName());
     }
 
-    public UserDto userDtoFromUser(User user){
+    public UserDto userDtoFromUser(User user) {
         return new UserDto(user.getId(), user.getName(), user.getEmail());
     }
 }

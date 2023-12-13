@@ -12,9 +12,9 @@ import ru.practicum.endpointhitclient.EndpointHitClientImpl;
 public class EndpointHitClientInjector {
     @Bean
     @Autowired
-    public EndpointHitClient getEndpointHitClient(@Value("${app.name}")String app,
-                                                  @Value("${stats-server.uri}") String statsServerUri,
+    public EndpointHitClient getEndpointHitClient(@Value("${app.name}") String app,
+                                                  @Value("${stats-server.url}") String statsServerUrl,
                                                   ObjectMapper mapper) {
-        return new EndpointHitClientImpl(app, statsServerUri, mapper);
+        return new EndpointHitClientImpl(app, statsServerUrl, mapper);
     }
 }

@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 
 @Service
-public class ParticipationRequestMapperImpl implements ParticipationRequestMapper{
+public class ParticipationRequestMapperImpl implements ParticipationRequestMapper {
 
     @Override
     public ParticipationRequestDto dtoFromParticipationRequest(ParticipationRequest participationRequest) {

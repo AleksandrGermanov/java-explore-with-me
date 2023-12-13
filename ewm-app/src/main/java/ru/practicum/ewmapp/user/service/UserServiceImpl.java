@@ -3,7 +3,7 @@ package ru.practicum.ewmapp.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewmapp.apierror.exception.UserNotFoundException;
+import ru.practicum.ewmapp.exception.notfound.UserNotFoundException;
 import ru.practicum.ewmapp.user.dto.UserDto;
 import ru.practicum.ewmapp.user.dto.UserMapper;
 import ru.practicum.ewmapp.user.model.User;
@@ -41,9 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByIdOrThrow(long userId) {
-        return userRepository.findById(userId).orElseThrow(()->
+        return userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String.format("User with id = %d does not exist.", userId))
-                );
+        );
     }
 
     private List<UserDto> findAll(int from, int size) {

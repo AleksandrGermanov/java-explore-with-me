@@ -9,8 +9,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EndpointHitClient {
-    EndpointHitDto saveEndpointHit(String uri, String ip, LocalDateTime timestamp) throws JsonProcessingException;
+    EndpointHitDto saveEndpointHit(String uri, String ip, LocalDateTime timestamp);
 
     List<StatsViewDto> retrieveStatsViewList(LocalDateTime start, LocalDateTime end,
-                                             @Nullable List<String> uris, @Nullable boolean unique);
+                                             @Nullable List<String> uris, boolean unique);
 }

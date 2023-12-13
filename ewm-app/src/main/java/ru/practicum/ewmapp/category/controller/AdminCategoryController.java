@@ -11,21 +11,22 @@ import ru.practicum.ewmapp.category.service.CategoryService;
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
     private final CategoryService categoryService;
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@RequestBody CategoryDto dto){
+    public CategoryDto createCategory(@RequestBody CategoryDto dto) {
         return categoryService.createCategory(dto);
     }
 
     @PatchMapping("/{id}")
     public CategoryDto updateCategory(@PathVariable long id,
-                                      @RequestBody CategoryDto dto){
+                                      @RequestBody CategoryDto dto) {
         return categoryService.updateCategory(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCategory(@PathVariable long id){
+    public void deleteCategory(@PathVariable long id) {
         categoryService.deleteCategory(id);
     }
 }

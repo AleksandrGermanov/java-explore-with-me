@@ -17,21 +17,21 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/admin/events")
 public class AdminEventController {
-private final EventService eventService;
+    private final EventService eventService;
 
-@GetMapping
+    @GetMapping
     List<EventFullDto> findAllForAdmin(@RequestParam(required = false, name = "users") List<Long> userIds,
                                        @RequestParam(required = false) List<EventState> states,
                                        @RequestParam(required = false) LocalDateTime rangeStart,
-                                       @RequestParam(required = false)LocalDateTime rangeEnd,
-                                       @RequestParam @PositiveOrZero @DefaultValue(value = "0") Integer from,
-                                       @RequestParam @Positive @DefaultValue(value = "10") Integer size){
-    return eventService.findAllEventsForAdmin(userIds, states,rangeStart, rangeEnd, from, size);
-}
+                                       @RequestParam(required = false) LocalDateTime rangeEnd,
+                                       @RequestParam(defaultValue = "0") @PositiveOrZero  Integer from,
+                                       @RequestParam(defaultValue = "10") @Positive  Integer size) {
+        return eventService.findAllEventsForAdmin(userIds, states, rangeStart, rangeEnd, from, size);
+    }
 
-@PatchMapping("/{eventId}")
+    @PatchMapping("/{eventId}")
     EventFullDto updateEventByAdminRequest(@PathVariable Long eventId,
-                                    @RequestBody UpdateEventAdminRequest adminRequest){
-    return eventService.updateEventByAdminRequest(eventId, adminRequest);
-}
+                                           @RequestBody UpdateEventAdminRequest adminRequest) {
+        return eventService.updateEventByAdminRequest(eventId, adminRequest);
+    }
 }

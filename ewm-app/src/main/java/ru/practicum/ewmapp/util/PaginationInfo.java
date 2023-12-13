@@ -12,13 +12,13 @@ public class PaginationInfo {
     private Integer size;
     private Sort sort;
 
-    public PaginationInfo(int from, int size){
+    public PaginationInfo(int from, int size) {
         this.from = from;
         this.size = size;
     }
 
-    public PageRequest asPageRequest(){
-        return sort == null ? PageRequest.of(from/size, size)
-                : PageRequest.of(from/size, size, sort);
+    public PageRequest asPageRequest() {
+        return sort == null ? PageRequest.of(from / size, size)
+                : PageRequest.of(from / size, size, sort);
     }
 }

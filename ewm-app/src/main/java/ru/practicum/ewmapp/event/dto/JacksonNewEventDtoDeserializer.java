@@ -1,6 +1,5 @@
 package ru.practicum.ewmapp.event.dto;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,20 +25,24 @@ public class JacksonNewEventDtoDeserializer extends StdDeserializer<NewEventDto>
 
     @Override
     public NewEventDto deserialize(JsonParser jsonParser, DeserializationContext deserializationContext)
-            throws IOException, JacksonException {
+            throws IOException {
         JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-        String annotation = node.get("annotation").asText(null);
+        String annotation = node.get("annotation") == null ? null
+                : node.get("annotation").asText();
         Long category = node.get("category") == null ? null
                 : node.get("category").asLong();
-        String description = node.get("description").asText(null);
+        String description = node.get("description") == null ? null
+                : node.get("description").asText();
         LocalDateTime eventDate = node.get("eventDate") == null ? null
                 : LocalDateTime.parse(node.get("eventDate").asText(), formatter);
         Location location = node.get("location") == null ? null
                 : extractLocation(node);
-        Boolean paid = node.get("paid").asBoolean(false);
-        Integer participantLimit = node.get("participantLimit").asInt(0);
-        Boolean requestModeration = node.get("requestModeration").asBoolean(true);
-        String title = node.get("title").asText(null);
+        Boolean paid = node.get("paid") != null && node.get("paid").asBoolean();
+        Integer participantLimit = node.get("participantLimit") == null ? null
+                : node.get("participantLimit").asInt();
+        Boolean requestModeration = node.get("requestModeration") == null || node.get("requestModeration").asBoolean();
+        String title = node.get("title") == null ? null
+                : node.get("title").asText();
         return new NewEventDto(annotation, category, description, eventDate,
                 location, paid, participantLimit, requestModeration, title);
     }

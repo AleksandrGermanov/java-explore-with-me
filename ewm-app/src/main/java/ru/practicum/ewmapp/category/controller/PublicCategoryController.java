@@ -17,13 +17,13 @@ public class PublicCategoryController {
     private final CategoryService categoryService;
 
     @GetMapping
-    public List<CategoryDto> findAll(@RequestParam @PositiveOrZero @DefaultValue(value = "0") Integer from,
-                                     @RequestParam @Positive @DefaultValue(value = "10") Integer size) {
+    public List<CategoryDto> findAll(@RequestParam(defaultValue = "0") @PositiveOrZero  Integer from,
+                                     @RequestParam(defaultValue = "10") @Positive  Integer size) {
         return categoryService.findAll(from, size);
     }
 
     @GetMapping("/{id}")
-    public CategoryDto retrieveCategory(@PathVariable long id){
+    public CategoryDto retrieveCategory(@PathVariable long id) {
         return categoryService.retrieveCategory(id);
     }
 }

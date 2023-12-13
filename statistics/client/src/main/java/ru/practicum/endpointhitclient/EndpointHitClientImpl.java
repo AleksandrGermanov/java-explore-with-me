@@ -27,34 +27,33 @@ import java.util.Map;
 @Slf4j
 public class EndpointHitClientImpl implements EndpointHitClient {
     private final String app;
-    private final String statsServerUri;
+    private final String statsServerUrl;
     @Getter
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper;
 
     public EndpointHitClientImpl(@Value("${app.name}")String app,
-                                 @Value("${stats-server.uri}") String statsServerUri,
+                                 @Value("${stats-server.url}") String statsServerUrl,
                                  ObjectMapper objectMapper) {
         this.app = app;
-        this.statsServerUri = statsServerUri;
+        this.statsServerUrl = statsServerUrl;
         this.objectMapper = objectMapper;
     }
 
     @Override
-    public EndpointHitDto saveEndpointHit(String uri, String ip, LocalDateTime timestamp)
-            throws JsonProcessingException {
+    public EndpointHitDto saveEndpointHit(String uri, String ip, LocalDateTime timestamp) {
         final String methodEndpoint = "/hit";
 
         EndpointHitDto dto = new EndpointHitDto(null, app, uri, ip, timestamp);
+        try {
         RequestEntity<String> entity = RequestEntity
-                .post(statsServerUri + methodEndpoint)
+                .post(statsServerUrl + methodEndpoint)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .body(objectMapper.writeValueAsString(dto));
-        try {
             return restTemplate.exchange(entity, EndpointHitDto.class).getBody();
-        } catch (HttpClientErrorException e) {
+        } catch (HttpClientErrorException | JsonProcessingException e) {
             throw new EndpointHitClientException("Не удалось получить сохранить данные на сервер статистики: "
                     + e.getMessage(), e);
         }
@@ -80,7 +79,7 @@ public class EndpointHitClientImpl implements EndpointHitClient {
         }
 
         RequestEntity<Void> entity = RequestEntity
-                .method(HttpMethod.GET, statsServerUri + methodEndpoint + query, params)
+                .method(HttpMethod.GET, statsServerUrl + methodEndpoint + query, params)
                 .accept(MediaType.APPLICATION_JSON)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .build();

@@ -21,18 +21,18 @@ public class AdminUserController {
 
     @GetMapping
     public List<UserDto> findAllOrByIds(@RequestParam(required = false) List<Long> ids,
-                                 @RequestParam @PositiveOrZero @DefaultValue(value = "0") Integer from,
-                                 @RequestParam @Positive @DefaultValue(value = "10") Integer size){
+                                        @RequestParam(defaultValue = "0") @PositiveOrZero  Integer from,
+                                        @RequestParam(defaultValue = "10") @Positive  Integer size) {
         return userService.findAllOrByIds(ids, from, size);
     }
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto dto){
+    public UserDto createUser(@Valid @RequestBody UserDto dto) {
         return userService.createUser(dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable Long id){
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
     }
 }

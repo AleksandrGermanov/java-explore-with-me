@@ -20,12 +20,12 @@ import java.time.LocalDateTime;
 @JsonDeserialize(using = JacksonNewEventDtoDeserializer.class)
 public class NewEventDto {
     @NotNull
-    @Size(min=20, max=2000)
+    @Size(min = 20, max = 2000)
     private String annotation;
     @NotNull
     private Long category;
     @NotNull
-    @Size(min=20, max=2000)
+    @Size(min = 20, max = 2000)
     private String description;
     @TwoHoursOrMoreFromNow
     private LocalDateTime eventDate;
@@ -33,9 +33,9 @@ public class NewEventDto {
     private Location location;
     private Boolean paid;
     @PositiveOrZero
-    private int participantLimit;
+    private Integer participantLimit;
     private Boolean requestModeration;
     @NotNull
-    @Size(min=3, max=120)
+    @Size(min = 3, max = 120)
     private String title;
 }

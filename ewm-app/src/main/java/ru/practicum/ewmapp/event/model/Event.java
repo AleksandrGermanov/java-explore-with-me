@@ -9,7 +9,6 @@ import ru.practicum.ewmapp.category.model.Category;
 import ru.practicum.ewmapp.compilation.model.CompilationEventRelation;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 import ru.practicum.ewmapp.user.model.User;
-import ru.practicum.ewmapp.util.Visitor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -35,12 +34,12 @@ public class Event {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
-    @Where(clause = "status = CONFIRMED")
+    @Where(clause = "status = 'CONFIRMED'")
     private List<ParticipationRequest> confirmedRequests;
     @NotNull
     private LocalDateTime createdOn;
     @NotNull
-    @Size(min = 20, max = 2000)
+    @Size(min = 20, max = 7000)
     private String description;
     @NotNull
     private LocalDateTime eventDate;
@@ -51,8 +50,8 @@ public class Event {
     @NotNull
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "lat", column = @Column(name="location_lat", nullable = false)),
-            @AttributeOverride(name = "lon", column = @Column(name="location_lon", nullable = false)),
+            @AttributeOverride(name = "lat", column = @Column(name = "location_lat", nullable = false)),
+            @AttributeOverride(name = "lon", column = @Column(name = "location_lon", nullable = false)),
 
     })
     private Location location;
@@ -89,9 +88,5 @@ public class Event {
         this.requestModeration = requestModeration;
         this.state = state;
         this.title = title;
-    }
-
-    public void accept(Visitor<Event> visitor){
-        visitor.visit(this);
     }
 }

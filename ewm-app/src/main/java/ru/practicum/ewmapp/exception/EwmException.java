@@ -1,14 +1,14 @@
-package ru.practicum.ewmapp.apierror.exception;
+package ru.practicum.ewmapp.exception;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-public abstract class EwmException extends RuntimeException{
+public abstract class EwmException extends RuntimeException {
     private String reason;
 
-    public EwmException(String message){
+    public EwmException(String message) {
         super(message);
     }
 }
