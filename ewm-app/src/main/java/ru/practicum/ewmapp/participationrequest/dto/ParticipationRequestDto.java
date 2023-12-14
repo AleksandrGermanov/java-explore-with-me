@@ -1,5 +1,6 @@
 package ru.practicum.ewmapp.participationrequest.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ParticipationRequestDto {
     private Long id;
+    @JsonSerialize(using = ParticipationRequestLocalDateTimeSerializer.class)
     private LocalDateTime created;
     private Long event;
     private Long requester;

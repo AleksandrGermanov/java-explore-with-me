@@ -25,7 +25,7 @@ public class NewEventDto {
     @NotNull
     private Long category;
     @NotNull
-    @Size(min = 20, max = 2000)
+    @Size(min = 20, max = 7000)
     private String description;
     @TwoHoursOrMoreFromNow
     private LocalDateTime eventDate;
@@ -33,7 +33,7 @@ public class NewEventDto {
     private Location location;
     private Boolean paid;
     @PositiveOrZero
-    private Integer participantLimit;
+    private int participantLimit;
     private Boolean requestModeration;
     @NotNull
     @Size(min = 3, max = 120)

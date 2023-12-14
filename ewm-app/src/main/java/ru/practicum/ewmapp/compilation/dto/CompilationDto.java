@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewmapp.event.dto.EventShortDto;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 @Validated
@@ -17,8 +15,6 @@ import java.util.List;
 public class CompilationDto {
     private Long id;
     private List<EventShortDto> events;
-    @NotNull
-    @Size(min = 1, max = 50)
     private String title;
     private boolean pinned;
 }

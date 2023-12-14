@@ -7,6 +7,7 @@ import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
@@ -22,6 +23,7 @@ public class User {
     @Column(name = "id")
     private Long id;
     @NotNull
+    @NotBlank
     @Size(min = 2, max = 250)
     @Column(name = "name", nullable = false)
     private String name;

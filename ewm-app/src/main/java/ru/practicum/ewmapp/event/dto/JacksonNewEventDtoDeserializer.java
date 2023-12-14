@@ -38,7 +38,7 @@ public class JacksonNewEventDtoDeserializer extends StdDeserializer<NewEventDto>
         Location location = node.get("location") == null ? null
                 : extractLocation(node);
         Boolean paid = node.get("paid") != null && node.get("paid").asBoolean();
-        Integer participantLimit = node.get("participantLimit") == null ? null
+        Integer participantLimit = node.get("participantLimit") == null ? 0
                 : node.get("participantLimit").asInt();
         Boolean requestModeration = node.get("requestModeration") == null || node.get("requestModeration").asBoolean();
         String title = node.get("title") == null ? null

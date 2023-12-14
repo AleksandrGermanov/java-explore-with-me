@@ -2,14 +2,14 @@ package ru.practicum.ewmapp.participationrequest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewmapp.exception.other.ParticipantLimitReachedException;
-import ru.practicum.ewmapp.exception.other.RequestAlreadyExistsException;
-import ru.practicum.ewmapp.exception.mismatch.EventStateMismatchException;
-import ru.practicum.ewmapp.exception.mismatch.RequesterMismatchException;
-import ru.practicum.ewmapp.exception.notfound.RequestNotFoundException;
 import ru.practicum.ewmapp.event.model.Event;
 import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.service.EventService;
+import ru.practicum.ewmapp.exception.mismatch.EventStateMismatchException;
+import ru.practicum.ewmapp.exception.mismatch.RequesterMismatchException;
+import ru.practicum.ewmapp.exception.notfound.RequestNotFoundException;
+import ru.practicum.ewmapp.exception.other.ParticipantLimitReachedException;
+import ru.practicum.ewmapp.exception.other.RequestAlreadyExistsException;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestDto;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestMapper;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
@@ -57,7 +57,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         ParticipationRequest request = findRequestByIdOrThrow(requestId);
         throwIfUserIsNotRequester(request, userId);
-        request.setStatus(ParticipationRequestStatus.CANCELLED);
+        request.setStatus(ParticipationRequestStatus.CANCELED);
         return participationRequestMapper.dtoFromParticipationRequest(participationRequestRepository.save(request));
     }
 
@@ -78,14 +78,15 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
         request.setCreated(LocalDateTime.now());
         request.setRequester(userService.findUserByIdOrThrow(requesterId));
         request.setEvent(event);
-        ParticipationRequestStatus status = event.getRequestModeration() ? ParticipationRequestStatus.PENDING
-                : ParticipationRequestStatus.CONFIRMED;
+        ParticipationRequestStatus status = (!event.getRequestModeration() || event.getParticipantLimit() == 0)
+                ? ParticipationRequestStatus.CONFIRMED
+                : ParticipationRequestStatus.PENDING;
         request.setStatus(status);
         return request;
     }
 
     private void throwIfParticipantLimitOfEventIsReached(Event event) {
-        if (event.getParticipantLimit().equals(event.getConfirmedRequests().size())) {
+        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests().size())) {
             throw new ParticipantLimitReachedException(String.format("Participant limit for this event "
                     + "has been reached. Event id = %d", event.getId()));
         }

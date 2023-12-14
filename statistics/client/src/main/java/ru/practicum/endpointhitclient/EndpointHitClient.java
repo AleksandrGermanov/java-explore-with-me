@@ -1,6 +1,5 @@
 package ru.practicum.endpointhitclient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.lang.Nullable;
 import ru.practicum.commondtolib.EndpointHitDto;
 import ru.practicum.commondtolib.StatsViewDto;

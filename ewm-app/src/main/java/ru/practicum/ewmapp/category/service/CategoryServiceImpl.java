@@ -2,11 +2,11 @@ package ru.practicum.ewmapp.category.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.ewmapp.exception.notfound.CategoryNotFoundException;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.category.dto.CategoryMapper;
 import ru.practicum.ewmapp.category.model.Category;
 import ru.practicum.ewmapp.category.repository.CategoryRepository;
+import ru.practicum.ewmapp.exception.notfound.CategoryNotFoundException;
 import ru.practicum.ewmapp.util.PaginationInfo;
 
 import java.util.List;

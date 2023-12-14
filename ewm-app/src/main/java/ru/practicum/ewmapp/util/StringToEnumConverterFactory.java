@@ -8,6 +8,12 @@ import org.springframework.stereotype.Component;
 public class StringToEnumConverterFactory
         implements ConverterFactory<String, Enum> {
 
+    @Override
+    public <T extends Enum> Converter<String, T> getConverter(
+            Class<T> targetType) {
+        return new StringToEnumConverter(targetType);
+    }
+
     private static class StringToEnumConverter<T extends Enum>
             implements Converter<String, T> {
 
@@ -20,11 +26,5 @@ public class StringToEnumConverterFactory
         public T convert(String source) {
             return (T) Enum.valueOf(this.enumType, source.trim().toUpperCase());
         }
-    }
-
-    @Override
-    public <T extends Enum> Converter<String, T> getConverter(
-            Class<T> targetType) {
-        return new StringToEnumConverter(targetType);
     }
 }

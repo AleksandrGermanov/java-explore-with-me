@@ -1,14 +1,14 @@
 package ru.practicum.ewmapp.event.moderation;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewmapp.event.model.Location;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 
 @Data
+@NoArgsConstructor
 public class UpdateEventRequest {
     private String annotation;
     private Long category;
@@ -27,7 +27,7 @@ public class UpdateEventRequest {
         this.category = category;
         this.description = description;
         this.eventDate = eventDate == null ? null
-        : LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                : LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         this.location = location;
         this.paid = paid;
         this.participantLimit = participantLimit;

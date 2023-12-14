@@ -19,6 +19,7 @@ import ru.practicum.ewmapp.event.repository.EventRepository;
 import ru.practicum.ewmapp.exception.mismatch.*;
 import ru.practicum.ewmapp.exception.notfound.EventNotFoundException;
 import ru.practicum.ewmapp.exception.other.ModerationNotRequiredException;
+import ru.practicum.ewmapp.exception.other.StartIsAfterEndException;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestDto;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestMapper;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
@@ -118,6 +119,7 @@ public class EventServiceImpl implements EventService {
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                     PublicEventSortType sort, Integer from, Integer size,
                                                     String uri, String remoteIp) {
+        throwIfStartIsAfterEnd(rangeStart, rangeEnd);
         List<Event> events = eventRepository.findAllEventsForUser(text, categoryIds, paid,
                 rangeStart, rangeEnd, onlyAvailable,
                 sort, from, size);
@@ -133,6 +135,13 @@ public class EventServiceImpl implements EventService {
                 .sorted((e1, e2) -> (int) (e1.getViews() - e2.getViews()))
                 .map(this::mapEventShortDtoFromEvent)
                 .collect(Collectors.toList());
+    }
+
+    private void throwIfStartIsAfterEnd(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new StartIsAfterEndException(String.format("RangeStart cannot be after rangeEnd. "
+                    + "RangeStart = %s, rangeEnd = %s.", rangeStart.toString(), rangeEnd.toString()));
+        }
     }
 
     @Override
@@ -166,7 +175,7 @@ public class EventServiceImpl implements EventService {
                 throw new EventStateMismatchException(String.format(
                         "Only not published events can be rejected. EventId = %d.", event.getId()));
             }
-            event.setState(EventState.CANCELLED);
+            event.setState(EventState.CANCELED);
         }
         return mapEventFullDtoFromEvent(setViewsForEvent(eventRepository.save(event)));
     }
@@ -178,6 +187,7 @@ public class EventServiceImpl implements EventService {
                                                     LocalDateTime rangeEnd,
                                                     Integer from,
                                                     Integer size) {
+        throwIfStartIsAfterEnd(rangeStart, rangeEnd);
         return eventRepository.findAllEventsForAdmin(userIds, states, rangeStart,
                         rangeEnd, from, size).stream()
                 .map(this::setViewsForEvent)
@@ -200,8 +210,10 @@ public class EventServiceImpl implements EventService {
 
     private Event setViewsForEvent(Event event) {
         List<StatsViewDto> viewDtoList = endpointHitClient.retrieveStatsViewList(event.getCreatedOn(),
-                LocalDateTime.now(), List.of("/events/" + event.getId()), false);
-        event.setViews((long) viewDtoList.size());
+                LocalDateTime.now(), List.of("/events/" + event.getId()), true);
+        long views = viewDtoList.isEmpty() ? 0L
+                : viewDtoList.get(0).getHits();
+        event.setViews(views);
         return event;
     }
 
@@ -324,7 +336,7 @@ public class EventServiceImpl implements EventService {
             event.setState(EventState.PENDING);
         }
         if (UserStateAction.CANCEL_REVIEW.equals(request.getStateAction())) {
-            event.setState(EventState.CANCELLED);
+            event.setState(EventState.CANCELED);
         }
     }
 
@@ -346,6 +358,9 @@ public class EventServiceImpl implements EventService {
         }
         if (request.getPaid() != null) {
             event.setPaid(request.getPaid());
+        }
+        if (request.getParticipantLimit() != null) {
+            event.setParticipantLimit(request.getParticipantLimit());
         }
         if (request.getRequestModeration() != null) {
             event.setRequestModeration(request.getRequestModeration());

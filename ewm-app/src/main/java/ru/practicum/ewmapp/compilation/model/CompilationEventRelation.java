@@ -1,26 +1,28 @@
 package ru.practicum.ewmapp.compilation.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.ewmapp.event.model.Event;
 
 import javax.persistence.*;
 
-@Entity
-@IdClass(CompilationEventRelationId.class)
 @Data
+@NoArgsConstructor
+@Entity
 @Table(name = "compilations_events")
 public class CompilationEventRelation {
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "compilation_id")
+    @EmbeddedId
+    private CompilationEventRelationId id;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("compilationId")
     private Compilation compilation;
-    @Id
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "event_id")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("eventId")
     private Event event;
 
-    public CompilationEventRelation(Compilation compilation, Event event){
+    public CompilationEventRelation(Compilation compilation, Event event) {
         this.compilation = compilation;
         this.event = event;
+        id = new CompilationEventRelationId(compilation.getId(), event.getId());
     }
 }

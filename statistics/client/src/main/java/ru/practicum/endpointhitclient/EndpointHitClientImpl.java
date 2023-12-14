@@ -32,7 +32,7 @@ public class EndpointHitClientImpl implements EndpointHitClient {
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper;
 
-    public EndpointHitClientImpl(@Value("${app.name}")String app,
+    public EndpointHitClientImpl(@Value("${app.name}") String app,
                                  @Value("${stats-server.url}") String statsServerUrl,
                                  ObjectMapper objectMapper) {
         this.app = app;
@@ -46,12 +46,12 @@ public class EndpointHitClientImpl implements EndpointHitClient {
 
         EndpointHitDto dto = new EndpointHitDto(null, app, uri, ip, timestamp);
         try {
-        RequestEntity<String> entity = RequestEntity
-                .post(statsServerUrl + methodEndpoint)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .body(objectMapper.writeValueAsString(dto));
+            RequestEntity<String> entity = RequestEntity
+                    .post(statsServerUrl + methodEndpoint)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                    .acceptCharset(StandardCharsets.UTF_8)
+                    .body(objectMapper.writeValueAsString(dto));
             return restTemplate.exchange(entity, EndpointHitDto.class).getBody();
         } catch (HttpClientErrorException | JsonProcessingException e) {
             throw new EndpointHitClientException("Не удалось получить сохранить данные на сервер статистики: "

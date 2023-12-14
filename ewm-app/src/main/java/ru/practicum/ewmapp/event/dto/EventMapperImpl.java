@@ -46,7 +46,7 @@ public class EventMapperImpl implements EventMapper {
     @Override
     public EventFullDto eventFullDtoFromEvent(Event event, CategoryDto categoryDto, UserShortDto initiatorDto) {
         long confirmedRequestsSize = event.getConfirmedRequests() == null ? 0
-        : event.getConfirmedRequests().size();
+                : event.getConfirmedRequests().size();
         return new EventFullDto(event.getId(),
                 event.getAnnotation(),
                 categoryDto,

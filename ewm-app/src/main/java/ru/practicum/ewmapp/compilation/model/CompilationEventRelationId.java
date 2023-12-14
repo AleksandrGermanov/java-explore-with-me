@@ -1,15 +1,20 @@
 package ru.practicum.ewmapp.compilation.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.ewmapp.event.model.Event;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.IdClass;
 import java.io.Serializable;
 
 @Embeddable
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompilationEventRelationId implements Serializable {
-    private Compilation compilation;
-    private Event event;
+    @Column(name = "compilation_id")
+    private Long compilationId;
+    @Column(name = "event_id")
+    private Long eventId;
 }

@@ -1,7 +1,5 @@
 package ru.practicum.ewmapp.event.repository;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.practicum.ewmapp.event.model.Event;
 import ru.practicum.ewmapp.event.model.EventState;
@@ -23,7 +21,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
     private final EntityManager entityManager;
     private final CriteriaBuilder criteriaBuilder;
 
-    public CustomEventRepositoryImpl(EntityManager entityManager){
+    public CustomEventRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
         criteriaBuilder = entityManager.getCriteriaBuilder();
     }
@@ -39,10 +37,16 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         List<Predicate> predicates = new ArrayList<>();
 
         if (text != null && !text.isEmpty()) {
-            predicates.add(criteriaBuilder.or(criteriaBuilder.like(
-                    criteriaBuilder.upper(eventRoot.get("description").as(String.class)),
-                    '%' + text.toUpperCase() + '%'
-            )));
+            predicates.add(criteriaBuilder.or(
+                    criteriaBuilder.like(
+                            criteriaBuilder.upper(eventRoot.get("annotation").as(String.class)),
+                            '%' + text.toUpperCase() + '%'
+                    ),
+                    criteriaBuilder.like(
+                            criteriaBuilder.upper(eventRoot.get("description").as(String.class)),
+                            '%' + text.toUpperCase() + '%'
+                    )
+            ));
         }
         if (categoryIds != null && !categoryIds.isEmpty()) {
             predicates.add(eventRoot.get("category").get("id").as(Long.class).in(categoryIds));
@@ -68,7 +72,7 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         }
 
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        if (sort !=null && sort.equals(PublicEventSortType.EVENT_DATE)) {
+        if (sort != null && sort.equals(PublicEventSortType.EVENT_DATE)) {
             criteriaQuery.orderBy(criteriaBuilder.desc(eventRoot.get("eventDate")));
         }
 

@@ -10,7 +10,8 @@ import java.util.List;
 public class CompilationMapperImpl implements CompilationMapper {
     @Override
     public Compilation compilationFromNewDto(NewCompilationDto dto) {
-        return new Compilation(dto.getTitle(), dto.isPinned());
+        boolean pinned = dto.getPinned() != null && dto.getPinned();
+        return new Compilation(dto.getTitle(), pinned);
     }
 
     @Override

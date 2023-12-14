@@ -11,7 +11,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 import ru.practicum.commondtolib.EndpointHitDto;
 import ru.practicum.commondtolib.StatsViewDto;
 
