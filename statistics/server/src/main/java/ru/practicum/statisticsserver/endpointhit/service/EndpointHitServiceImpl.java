@@ -11,6 +11,7 @@ import ru.practicum.statisticsserver.endpointhit.mapping.StatsViewMapper;
 import ru.practicum.statisticsserver.endpointhit.model.EndpointHit;
 import ru.practicum.statisticsserver.endpointhit.model.StatsView;
 import ru.practicum.statisticsserver.endpointhit.repository.EndpointHitRepository;
+import ru.practicum.statisticsserver.util.StartIsAfterEndException;
 import ru.practicum.statisticsserver.util.StatisticsServerValidator;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
     @Override
     public List<StatsViewDto> retrieveStatsViewList(LocalDateTime start, LocalDateTime end,
                                                     @Nullable List<String> uris, boolean unique) {
+        throwIfStartIsAfterEnd(start, end);
         return getViewListForGivenParams(start, end, uris, unique).equals(Collections.emptyList()) ? Collections.emptyList()
                 : getViewListForGivenParams(start, end, uris, unique).stream()
                 .map(statsViewMapper::statsViewToDto)
@@ -86,5 +88,13 @@ public class EndpointHitServiceImpl implements EndpointHitService {
             }
         });
         return results;
+    }
+
+
+    private void throwIfStartIsAfterEnd(LocalDateTime start, LocalDateTime end) {
+        if(start.isAfter(end)){
+            throw new StartIsAfterEndException(String.format("Start is after end. Start = %s, end = %s",
+                    start.toString(), end.toString()));
+        }
     }
 }
