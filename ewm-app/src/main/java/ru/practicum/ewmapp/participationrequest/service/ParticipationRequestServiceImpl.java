@@ -2,6 +2,7 @@ package ru.practicum.ewmapp.participationrequest.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmapp.event.model.Event;
 import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.service.EventService;
@@ -30,11 +31,13 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     private final UserService userService;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequest> findAllByEvent(Event event) {
         return participationRequestRepository.findAllByEvent(event);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findAllByRequesterId(Long requesterId) {
         return participationRequestRepository.findAllByRequesterId(requesterId).stream()
                 .map(participationRequestMapper::dtoFromParticipationRequest)
@@ -42,8 +45,10 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto createRequest(Long requesterId, Long eventId) {
         Event event = eventService.findEventByIdOrThrow(eventId);
+
         throwIfRequesterIsEventInitiator(event, requesterId);
         throwIfRequestAlreadyExist(event, requesterId);
         throwIfEventIsNotPublished(event);
@@ -54,6 +59,7 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     }
 
     @Override
+    @Transactional
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         ParticipationRequest request = findRequestByIdOrThrow(requestId);
         throwIfUserIsNotRequester(request, userId);

@@ -2,6 +2,7 @@ package ru.practicum.ewmapp.compilation.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmapp.compilation.dto.CompilationDto;
 import ru.practicum.ewmapp.compilation.dto.CompilationMapper;
 import ru.practicum.ewmapp.compilation.dto.NewCompilationDto;
@@ -29,6 +30,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationEventRelationRepository compilationEventRelationRepository;
 
     @Override
+    @Transactional
     public CompilationDto createCompilation(NewCompilationDto dto) {
         List<Event> events = dto.getEvents() == null ? Collections.emptyList()
                 : dto.getEvents().stream()
@@ -48,6 +50,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional
     public CompilationDto updateCompilation(Long compilationId, NewCompilationDto dto) {
         Compilation compilation = findCompilationByIdOrThrow(compilationId);
         mergeNewDtoIntoCompilation(dto, compilation);
@@ -55,6 +58,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional
     public void deleteCompilation(Long compilationId) {
         if (!compilationRepository.existsById(compilationId)) {
             throw new CompilationNotFoundException(String.format("Compilation with id = %d does not exist",
@@ -64,6 +68,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CompilationDto> findAllOrByPinnedParam(Boolean pinned, Integer from, Integer size) {
         PaginationInfo info = new PaginationInfo(from, size);
         if (pinned == null) {
@@ -77,6 +82,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CompilationDto retrieveCompilation(Long compilationId) {
         return mapCompilationDtoFromCompilation(findCompilationByIdOrThrow(compilationId));
     }

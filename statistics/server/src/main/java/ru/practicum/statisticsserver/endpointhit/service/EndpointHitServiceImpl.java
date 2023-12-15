@@ -92,7 +92,7 @@ public class EndpointHitServiceImpl implements EndpointHitService {
 
 
     private void throwIfStartIsAfterEnd(LocalDateTime start, LocalDateTime end) {
-        if(start.isAfter(end)){
+        if (start.isAfter(end)) {
             throw new StartIsAfterEndException(String.format("Start is after end. Start = %s, end = %s",
                     start.toString(), end.toString()));
         }

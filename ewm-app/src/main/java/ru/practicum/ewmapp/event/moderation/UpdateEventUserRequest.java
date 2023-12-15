@@ -1,11 +1,13 @@
 package ru.practicum.ewmapp.event.moderation;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.ewmapp.event.model.Location;
 
+import java.time.LocalDateTime;
+
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class UpdateEventUserRequest extends UpdateEventRequest {

@@ -1,10 +1,12 @@
 package ru.practicum.ewmapp.event.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import ru.practicum.commondtolib.JacksonLocalDateTimeSerializer;
 import ru.practicum.ewmapp.event.model.Location;
 import ru.practicum.ewmapp.util.TwoHoursOrMoreFromNow;
 
@@ -28,6 +30,7 @@ public class NewEventDto {
     @Size(min = 20, max = 7000)
     private String description;
     @TwoHoursOrMoreFromNow
+    @JsonSerialize(using = JacksonLocalDateTimeSerializer.class)
     private LocalDateTime eventDate;
     @NotNull
     private Location location;

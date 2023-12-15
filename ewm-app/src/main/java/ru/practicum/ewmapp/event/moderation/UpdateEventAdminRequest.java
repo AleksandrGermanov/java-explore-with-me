@@ -1,11 +1,10 @@
 package ru.practicum.ewmapp.event.moderation;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import ru.practicum.ewmapp.event.model.Location;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class UpdateEventAdminRequest extends UpdateEventRequest {

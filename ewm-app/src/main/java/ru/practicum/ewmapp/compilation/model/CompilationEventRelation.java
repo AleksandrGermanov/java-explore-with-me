@@ -25,4 +25,6 @@ public class CompilationEventRelation {
         this.event = event;
         id = new CompilationEventRelationId(compilation.getId(), event.getId());
     }
+
+
 }

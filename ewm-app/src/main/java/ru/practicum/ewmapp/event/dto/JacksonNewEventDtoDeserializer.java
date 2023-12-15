@@ -13,8 +13,6 @@ import java.time.format.DateTimeFormatter;
 
 @Component
 public class JacksonNewEventDtoDeserializer extends StdDeserializer<NewEventDto> {
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     public JacksonNewEventDtoDeserializer() {
         this(null);
     }
@@ -33,8 +31,8 @@ public class JacksonNewEventDtoDeserializer extends StdDeserializer<NewEventDto>
                 : node.get("category").asLong();
         String description = node.get("description") == null ? null
                 : node.get("description").asText();
-        LocalDateTime eventDate = node.get("eventDate") == null ? null
-                : LocalDateTime.parse(node.get("eventDate").asText(), formatter);
+        LocalDateTime eventDate = node.get("eventDate")== null ? null :
+                LocalDateTime.parse(node.get("eventDate").asText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Location location = node.get("location") == null ? null
                 : extractLocation(node);
         Boolean paid = node.get("paid") != null && node.get("paid").asBoolean();

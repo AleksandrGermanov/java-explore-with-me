@@ -25,10 +25,10 @@ import java.util.Map;
 
 @Service
 @Slf4j
+@Getter
 public class EndpointHitClientImpl implements EndpointHitClient {
     private final String app;
     private final String statsServerUrl;
-    @Getter
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper;
 

@@ -15,10 +15,12 @@ public class EventMapperImpl implements EventMapper {
 
     @Override
     public EventShortDto eventShortDtoFromEvent(Event event, CategoryDto categoryDto, UserShortDto initiatorDto) {
+        long confirmedRequestsSize = event.getConfirmedRequests() == null ? 0
+                : event.getConfirmedRequests().size();
         return new EventShortDto(event.getId(),
                 event.getAnnotation(),
                 categoryDto,
-                (long) event.getConfirmedRequests().size(),
+                confirmedRequestsSize,
                 event.getEventDate(),
                 initiatorDto,
                 event.getPaid(),

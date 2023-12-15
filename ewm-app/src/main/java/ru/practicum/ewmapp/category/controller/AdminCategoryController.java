@@ -3,11 +3,15 @@ package ru.practicum.ewmapp.category.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.category.service.CategoryService;
 
+import javax.validation.Valid;
+
 @Slf4j
+@Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/categories")
@@ -16,7 +20,7 @@ public class AdminCategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto createCategory(@RequestBody CategoryDto dto) {
+    public CategoryDto createCategory(@RequestBody @Valid CategoryDto dto) {
         log.info("Processing incoming request GET /admin/categories. Category dto = {}", dto);
         return categoryService.createCategory(dto);
     }

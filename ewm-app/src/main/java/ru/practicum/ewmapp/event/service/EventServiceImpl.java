@@ -2,6 +2,7 @@ package ru.practicum.ewmapp.event.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.commondtolib.StatsViewDto;
 import ru.practicum.endpointhitclient.EndpointHitClient;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
@@ -55,6 +56,7 @@ public class EventServiceImpl implements EventService {
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> findAllByUser(Long userId, Integer from, Integer size) {
         PaginationInfo info = new PaginationInfo(from, size);
         return eventRepository.findAllByInitiatorId(userId, info.asPageRequest()).stream()
@@ -64,6 +66,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto createEvent(Long userId, NewEventDto dto) {
         User initiator = userService.findUserByIdOrThrow(userId);
         Category category = categoryService.findCategoryByIdOrThrow(dto.getCategory());
@@ -72,6 +75,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto findByUserAndById(Long userId, Long eventId) {
         Event event = findEventByIdOrThrow(eventId);
         throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
@@ -80,6 +84,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEventByUserRequest(Long userId, Long eventId, UpdateEventUserRequest request) {
         Event event = findEventByIdOrThrow(eventId);
         throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
@@ -88,6 +93,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findAllRequestsForEvent(Long userId, Long eventId) {
         Event event = findEventByIdOrThrow(eventId);
         throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
@@ -97,6 +103,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventRequestStatusUpdateResult updateStatusForEventRequests(Long userId,
                                                                        Long eventId,
                                                                        EventRequestStatusUpdateRequest updateRequest) {
@@ -115,6 +122,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> findAllEventsForUser(String text, List<Long> categoryIds, Boolean paid,
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                     PublicEventSortType sort, Integer from, Integer size,
@@ -137,14 +145,8 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    private void throwIfStartIsAfterEnd(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
-        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-            throw new StartIsAfterEndException(String.format("RangeStart cannot be after rangeEnd. "
-                    + "RangeStart = %s, rangeEnd = %s.", rangeStart.toString(), rangeEnd.toString()));
-        }
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public EventFullDto retrievePublishedEvent(Long eventId, String uri, String remoteIp) {
         Event event = eventRepository.findEventByIdAndState(eventId, EventState.PUBLISHED)
                 .orElseThrow(() ->
@@ -155,12 +157,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
     public EventFullDto updateEventByAdminRequest(Long eventId, UpdateEventAdminRequest adminRequest) {
         Event event = findEventByIdOrThrow(eventId);
         mergeRequestCommonPartIntoEvent(event, adminRequest);
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new EventDateMismatchException(String.format("Event update time requirement is not met." +
-                            "EventDate has to be 1 hours or more from now. Event id = %d, eventDate = %s", event.getId(),
+                            "EventDate has to be 1 hours or more from now. Event id = %d, eventDate = %s",
+                    event.getId(),
                     event.getEventDate().format(formatter)));
         }
         if (AdminStateAction.PUBLISH_EVENT.equals(adminRequest.getStateAction())) {
@@ -181,6 +185,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventFullDto> findAllEventsForAdmin(List<Long> userIds,
                                                     List<EventState> states,
                                                     LocalDateTime rangeStart,
@@ -196,16 +201,17 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public Event findEventByIdOrThrow(Long eventId) {
+        return eventRepository.findById(eventId).orElseThrow(() ->
+                new EventNotFoundException(String.format("Event with id = %d does not exist.", eventId)));
+    }
+
+    @Override
     public EventShortDto mapEventShortDtoFromEvent(Event event) {
         CategoryDto categoryDto = categoryMapper.categoryDtoFromCategory(event.getCategory());
         UserShortDto initiatorDto = userMapper.userShortDtoFromUser(event.getInitiator());
         return eventMapper.eventShortDtoFromEvent(event, categoryDto, initiatorDto);
-    }
-
-    @Override
-    public Event findEventByIdOrThrow(Long eventId) {
-        return eventRepository.findById(eventId).orElseThrow(() ->
-                new EventNotFoundException(String.format("Event with id = %d does not exist.", eventId)));
     }
 
     private Event setViewsForEvent(Event event) {
@@ -270,7 +276,6 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-
     private EventRequestStatusUpdateResult performCapacityIsZeroResultAction(
             List<ParticipationRequest> pendingRequests, ParticipationRequestRepository participationRequestRepository,
             EventRequestStatusUpdateRequest updateForRequest) {
@@ -318,6 +323,13 @@ public class EventServiceImpl implements EventService {
             throw new ModerationNotRequiredException(
                     String.format("For this event moderation is not required. EventId = %d", event.getId())
             );
+        }
+    }
+
+    private void throwIfStartIsAfterEnd(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
+        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
+            throw new StartIsAfterEndException(String.format("RangeStart cannot be after rangeEnd. "
+                    + "RangeStart = %s, rangeEnd = %s.", rangeStart, rangeEnd));
         }
     }
 
@@ -369,7 +381,6 @@ public class EventServiceImpl implements EventService {
             event.setTitle(request.getTitle());
         }
     }
-
 
     private void throwIfEventInitiatorIdAndUserIdDiffer(Event event, Long userId) {
         if (!event.getInitiator().getId().equals(userId)) {

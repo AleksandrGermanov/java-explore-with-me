@@ -1,6 +1,8 @@
 package ru.practicum.ewmapp.compilation.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
@@ -10,6 +12,8 @@ import java.util.List;
 
 @Validated
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class NewCompilationDto {
     private List<Long> events;
     @NotNull

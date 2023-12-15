@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class ParticipationRequestDto {
     private Long id;
-    @JsonSerialize(using = ParticipationRequestLocalDateTimeSerializer.class)
+    @JsonSerialize(using = ParticipationRequestLocalDateTimeSerializer.class) //для соответствия спецификации
     private LocalDateTime created;
     private Long event;
     private Long requester;

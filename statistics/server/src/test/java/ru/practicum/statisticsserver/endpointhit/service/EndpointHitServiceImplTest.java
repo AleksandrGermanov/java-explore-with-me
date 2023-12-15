@@ -14,6 +14,7 @@ import ru.practicum.statisticsserver.endpointhit.mapping.StatsViewMapper;
 import ru.practicum.statisticsserver.endpointhit.model.EndpointHit;
 import ru.practicum.statisticsserver.endpointhit.model.StatsView;
 import ru.practicum.statisticsserver.endpointhit.repository.EndpointHitRepository;
+import ru.practicum.statisticsserver.util.StartIsAfterEndException;
 import ru.practicum.statisticsserver.util.StatisticsServerValidator;
 
 import java.time.LocalDateTime;
@@ -83,6 +84,12 @@ public class EndpointHitServiceImplTest {
 
         Assertions.assertEquals(Collections.emptyList(),
                 service.retrieveStatsViewList(start, end, null, false));
+    }
+
+    @Test
+    public void methodRetrieveStatsViewWhenStartisAfterEndThrows() {
+        Assertions.assertThrows(StartIsAfterEndException.class,
+                () -> service.retrieveStatsViewList(end, start, null, false));
     }
 
     @Test

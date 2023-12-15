@@ -3,6 +3,7 @@ package ru.practicum.ewmapp.user.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmapp.exception.notfound.UserNotFoundException;
 import ru.practicum.ewmapp.user.dto.UserDto;
 import ru.practicum.ewmapp.user.dto.UserMapper;
@@ -20,18 +21,21 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> findAllOrByIds(@Nullable List<Long> ids, Integer from, Integer size) {
         return ids == null ? findAll(from, size)
                 : findByIdIn(ids);
     }
 
     @Override
+    @Transactional
     public UserDto createUser(UserDto dto) {
         User user = userMapper.userFromUserDto(dto);
         return userMapper.userDtoFromUser(userRepository.save(user));
     }
 
     @Override
+    @Transactional
     public void deleteUser(long id) {
         if (!userRepository.existsById(id)) {
             throw new UserNotFoundException(String.format("User with id = %d does not exist.", id));
@@ -40,6 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public User findUserByIdOrThrow(long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
                 new UserNotFoundException(String.format("User with id = %d does not exist.", userId))

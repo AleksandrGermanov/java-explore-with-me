@@ -26,7 +26,6 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         criteriaBuilder = entityManager.getCriteriaBuilder();
     }
 
-
     @Override
     public List<Event> findAllEventsForUser(String text, List<Long> categoryIds, Boolean paid,
                                             LocalDateTime rangeStart, LocalDateTime rangeEnd,
@@ -67,11 +66,12 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
                     criteriaBuilder.currentTimestamp()));
         }
         if (onlyAvailable) {
-            predicates.add(criteriaBuilder.gt(eventRoot.get("participantLimit").as(Long.class),
-                    criteriaBuilder.count(eventRoot.get("confirmedRequests")).as(Long.class)));
+            predicates.add(criteriaBuilder.greaterThan(eventRoot.get("participantLimit").as(Integer.class),
+                    criteriaBuilder.size(eventRoot.get("requestsForEvent")))); //три часа потратил
+            //на эту строчку - коллекции считаются методом size, а не count... И никто об этом не пишет!
         }
-
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
+
         if (sort != null && sort.equals(PublicEventSortType.EVENT_DATE)) {
             criteriaQuery.orderBy(criteriaBuilder.desc(eventRoot.get("eventDate")));
         }
@@ -115,5 +115,4 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         typedQuery.setMaxResults(size);
         return typedQuery.getResultList();
     }
-
 }
