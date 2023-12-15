@@ -31,7 +31,7 @@ public class JacksonNewEventDtoDeserializer extends StdDeserializer<NewEventDto>
                 : node.get("category").asLong();
         String description = node.get("description") == null ? null
                 : node.get("description").asText();
-        LocalDateTime eventDate = node.get("eventDate")== null ? null :
+        LocalDateTime eventDate = node.get("eventDate") == null ? null :
                 LocalDateTime.parse(node.get("eventDate").asText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Location location = node.get("location") == null ? null
                 : extractLocation(node);

@@ -82,7 +82,7 @@ class AdminEventControllerTest {
     @SneakyThrows
     void updateEventByAdminRequest() {
         UpdateEventAdminRequest request = new UpdateEventAdminRequest("null", 0L, "null",
-                null,  null, null, null, null,
+                null, null, null, null, null,
                 null, null);
         when(eventService.updateEventByAdminRequest(0L, request))
                 .thenReturn(eventFullDto);

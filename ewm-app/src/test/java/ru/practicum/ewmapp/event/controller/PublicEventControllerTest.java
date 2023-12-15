@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.event.dto.EventFullDto;
 import ru.practicum.ewmapp.event.dto.EventShortDto;
-import ru.practicum.ewmapp.event.dto.NewEventDto;
 import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.model.Location;
 import ru.practicum.ewmapp.event.service.EventService;

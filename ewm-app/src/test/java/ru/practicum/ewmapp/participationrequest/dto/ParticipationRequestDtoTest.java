@@ -22,7 +22,7 @@ class ParticipationRequestDtoTest {
 
     @Test
     @SneakyThrows
-    public void ParticipationRequestDtoLocalDateTimeSerializationTest() {
+    public void participationRequestDtoLocalDateTimeSerializationTest() {
         ParticipationRequestDto dto = new ParticipationRequestDto(
                 1L, LocalDateTime.of(2023, 1, 1, 1, 1, 1, 111111111),
                 null, null, ParticipationRequestStatus.CONFIRMED);

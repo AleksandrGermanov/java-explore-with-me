@@ -442,8 +442,8 @@ class EventServiceImplTest {
 
     @Test
     void findAllEventsForUserSortByViews() {
-        when(eventRepository.findAllEventsForUser(any(), any(), any(), any(), any(), any(), any(), any(), any())).
-                thenReturn(List.of(event));
+        when(eventRepository.findAllEventsForUser(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(List.of(event));
         when(eventMapper.eventShortDtoFromEvent(any(), any(), any()))
                 .thenReturn(eventShortDto);
 
@@ -455,8 +455,8 @@ class EventServiceImplTest {
 
     @Test
     void findAllEventsForUserSortByEventDate() {
-        when(eventRepository.findAllEventsForUser(any(), any(), any(), any(), any(), any(), any(), any(), any())).
-                thenReturn(List.of(event));
+        when(eventRepository.findAllEventsForUser(any(), any(), any(), any(), any(), any(), any(), any(), any()))
+                .thenReturn(List.of(event));
         when(eventMapper.eventShortDtoFromEvent(any(), any(), any()))
                 .thenReturn(eventShortDto);
 

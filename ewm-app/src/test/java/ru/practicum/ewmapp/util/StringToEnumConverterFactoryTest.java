@@ -4,11 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.convert.converter.Converter;
 
-enum TestEnum {
-    TEST,
-    ENUM
-}
-
 class StringToEnumConverterFactoryTest {
     private StringToEnumConverterFactory factory = new StringToEnumConverterFactory();
 

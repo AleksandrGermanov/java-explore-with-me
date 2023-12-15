@@ -1,6 +1,9 @@
 package ru.practicum.ewmapp.event.moderation;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ru.practicum.ewmapp.event.model.Location;
 
 @Data

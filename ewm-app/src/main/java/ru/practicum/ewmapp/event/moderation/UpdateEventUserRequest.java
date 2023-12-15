@@ -3,8 +3,6 @@ package ru.practicum.ewmapp.event.moderation;
 import lombok.*;
 import ru.practicum.ewmapp.event.model.Location;
 
-import java.time.LocalDateTime;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

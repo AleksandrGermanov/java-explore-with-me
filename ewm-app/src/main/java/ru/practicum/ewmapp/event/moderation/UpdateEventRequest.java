@@ -22,7 +22,7 @@ public class UpdateEventRequest {
     private Boolean requestModeration;
     private String title;
 
-    public LocalDateTime getEventDate(){
+    public LocalDateTime getEventDate() {
         return eventDate == null ? null
                 : LocalDateTime.parse(eventDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
