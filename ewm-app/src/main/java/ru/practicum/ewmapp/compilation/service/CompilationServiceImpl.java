@@ -37,16 +37,15 @@ public class CompilationServiceImpl implements CompilationService {
                 .map(eventService::findEventByIdOrThrow)
                 .collect(Collectors.toList());
         Compilation compilation = compilationMapper.compilationFromNewDto(dto);
-        Compilation result = compilationRepository.save(compilation);
-        List<CompilationEventRelation> eventRelations = new ArrayList<>(events.size());
+        Compilation result = compilationRepository.save(compilation);//вот здесь возвращается immutable
+        if (!events.isEmpty()) {
+            result.setEventRelations(new ArrayList<>(events.size()));
+        }
         events.stream()
                 .map(e -> new CompilationEventRelation(result, e))
-                .forEach(relation -> {
-                    compilationEventRelationRepository.save(relation);
-                    eventRelations.add(relation);
-                });
-        result.setEventRelations(eventRelations);               //в рамках одной транзакции получение через маппинг
-        return mapCompilationDtoFromCompilation(result);        // не сработает, устанавливаем вручную
+                .peek(result.getEventRelations()::add)
+                .forEach(compilationEventRelationRepository::save);
+        return mapCompilationDtoFromCompilation(result);
     }
 
     @Override
@@ -105,20 +104,19 @@ public class CompilationServiceImpl implements CompilationService {
         if (events == null) {
             return;
         }
-        List<CompilationEventRelation> eventRelations = new ArrayList<>(events.size());
         compilationEventRelationRepository.deleteByCompilation(compilation);
+        compilation.setEventRelations(new ArrayList<>(events.size())); //помним, что репозиторий вернул immutable
         events.stream()
                 .map(e -> new CompilationEventRelation(compilation, e))
-                .forEach(relation -> {
-                    compilationEventRelationRepository.save(relation);
-                    eventRelations.add(relation);
-                });
-        compilation.setEventRelations(eventRelations);
+                .peek(compilation.getEventRelations()::add)
+                .forEach(compilationEventRelationRepository::save);
     }
 
     private CompilationDto mapCompilationDtoFromCompilation(Compilation compilation) {
-        List<EventShortDto> events = compilation.getEventRelations() == null ? Collections.emptyList()
-                : compilation.getEventRelations().stream()
+        if (compilation.getEventRelations() == null || compilation.getEventRelations().isEmpty()) {
+            return compilationMapper.dtoFromCompilation(compilation, Collections.emptyList());
+        }
+        List<EventShortDto> events = compilation.getEventRelations().stream()
                 .map(CompilationEventRelation::getEvent)
                 .map(eventService::mapEventShortDtoFromEvent)
                 .collect(Collectors.toList());

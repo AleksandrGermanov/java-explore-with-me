@@ -84,6 +84,7 @@ class CompilationServiceImplTest {
     @Test
     void createCompilationWhenWithoutEventsReturnsValue() {
         newDto.setEvents(null);
+        compilation.setEventRelations(Collections.emptyList());
 
         when(compilationMapper.compilationFromNewDto(newDto))
                 .thenReturn(compilation);

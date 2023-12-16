@@ -1,4 +1,3 @@
---TODO удалить первую инструкцию при переносе в прод.
 DROP TABLE IF EXISTS users, categories, compilations, events, compilations_events, participation_requests;
 
 CREATE TABLE IF NOT EXISTS users(
