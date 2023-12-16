@@ -1,4 +1,3 @@
---TODO удалить первую инструкцию при переносе в прод.
 DROP TABLE IF EXISTS endpoint_hit;
 
 CREATE TABLE IF NOT EXISTS endpoint_hit(

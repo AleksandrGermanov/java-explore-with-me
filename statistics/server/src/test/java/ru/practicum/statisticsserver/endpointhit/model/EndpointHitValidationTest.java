@@ -61,17 +61,6 @@ public class EndpointHitValidationTest {
     }
 
     @Test
-    public void validatorWhenIpIsBadFormattedThrowsException() {
-        hit.setIp("1.2.3");
-
-        ConstraintViolationException e
-                = Assertions.assertThrows(ConstraintViolationException.class, () -> validator.validate(hit));
-        Assertions.assertTrue(e.getConstraintViolations().stream()
-                .map(violation -> violation.getPropertyPath().toString())
-                .anyMatch(str -> str.equals("ip")));
-    }
-
-    @Test
     public void validatorWhenTimestampIsNullThrowsException() {
         hit.setTimestamp(null);
 

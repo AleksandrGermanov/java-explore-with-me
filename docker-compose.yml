@@ -25,13 +25,31 @@ services:
       - POSTGRES_PASSWORD=${STATS_DB_PASSWORD}
       - POSTGRES_DB=${STATS_DB_NAME}
 
-  
+
   ewm-service:
     build: ./ewm-app
     image: ewm-service
     container_name: ewm-service
     ports:
-      - "8080:8080"
+      - "${EWM_SERVER_PORT}:${EWM_SERVER_PORT}"
+    depends_on:
+      - ewm-db
+      - stats-server
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:${EWM_DB_PORT}/${EWM_DB_NAME}
+      - SPRING_DATASOURCE_USERNAME=${EWM_DB_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${EWM_DB_PASSWORD}
+      - SERVER_PORT=${EWM_SERVER_PORT}
+      - APP_NAME= ewm-service
+      - STATS-SERVER_URL=http://stats-server:${STATS_SERVER_PORT}
 
   ewm-db:
     image: postgres:14-alpine
+    container_name: ewm-db
+    command: -p ${EWM_DB_PORT}
+    ports:
+      - "${EWM_DB_PORT}:${EWM_DB_PORT}"
+    environment:
+      - POSTGRES_USER=${EWM_DB_USERNAME}
+      - POSTGRES_PASSWORD=${EWM_DB_PASSWORD}
+      - POSTGRES_DB=${EWM_DB_NAME}

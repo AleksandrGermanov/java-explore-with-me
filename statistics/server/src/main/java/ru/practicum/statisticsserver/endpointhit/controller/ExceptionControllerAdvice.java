@@ -3,8 +3,10 @@ package ru.practicum.statisticsserver.endpointhit.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.practicum.statisticsserver.util.StartIsAfterEndException;
 
 import javax.validation.ConstraintViolationException;
 import java.util.Arrays;
@@ -25,11 +27,19 @@ public class ExceptionControllerAdvice {
                 HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler({MissingServletRequestParameterException.class, StartIsAfterEndException.class})
+    public ResponseEntity<String> handleBadRequest(Exception e) {
+        log.debug("Из-за неверно составленного запроса произошла ошибка {} с сообщением {}.", e.getClass(), e.getMessage());
+        log.debug(Arrays.toString(e.getStackTrace()));
+        return new ResponseEntity<>("Из-за неверно составленного запроса произошла ошибка " + e.getClass()
+                + " с сообщением \"" + e.getMessage() + '\"', HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUnexpected(Exception e) {
-        log.warn("Произошла непредвиденная ошибка {} с сообщением {}", e.getClass(), e.getMessage());
+        log.warn("Произошла непредвиденная ошибка {} с сообщением {}.", e.getClass(), e.getMessage());
         log.warn(Arrays.toString(e.getStackTrace()));
         return new ResponseEntity<>("Произошла непредвиденная ошибка " + e.getClass()
-                + " с сообщением \"" + e.getMessage() + '\"', HttpStatus.INTERNAL_SERVER_ERROR);
+                + " с сообщением \"" + e.getMessage() + "\".", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
