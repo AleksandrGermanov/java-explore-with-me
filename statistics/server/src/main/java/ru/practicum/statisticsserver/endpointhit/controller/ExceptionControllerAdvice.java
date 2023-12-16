@@ -29,8 +29,8 @@ public class ExceptionControllerAdvice {
 
     @ExceptionHandler({MissingServletRequestParameterException.class, StartIsAfterEndException.class})
     public ResponseEntity<String> handleBadRequest(Exception e) {
-        log.warn("Из-за неверно составленного запроса произошла ошибка {} с сообщением {}.", e.getClass(), e.getMessage());
-        log.warn(Arrays.toString(e.getStackTrace()));
+        log.debug("Из-за неверно составленного запроса произошла ошибка {} с сообщением {}.", e.getClass(), e.getMessage());
+        log.debug(Arrays.toString(e.getStackTrace()));
         return new ResponseEntity<>("Из-за неверно составленного запроса произошла ошибка " + e.getClass()
                 + " с сообщением \"" + e.getMessage() + '\"', HttpStatus.BAD_REQUEST);
     }

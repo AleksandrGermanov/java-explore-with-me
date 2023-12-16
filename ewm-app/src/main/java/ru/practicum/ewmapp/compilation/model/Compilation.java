@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +29,7 @@ public class Compilation {
     private Boolean pinned;
     @ToString.Exclude
     @OneToMany(mappedBy = "compilation")
-    private List<CompilationEventRelation> eventRelations;
+    private List<CompilationEventRelation> eventRelations = new ArrayList<>();
 
     public Compilation(String title, Boolean pinned) {
         this.title = title;
