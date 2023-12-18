@@ -3,6 +3,7 @@ package ru.practicum.ewmapp.user.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.ewmapp.comments.model.Comment;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 
 import javax.persistence.*;
@@ -34,6 +35,8 @@ public class User {
     private String email;
     @OneToMany(mappedBy = "requester", fetch = FetchType.LAZY)
     private List<ParticipationRequest> requestsFromUser;
+    @OneToMany(mappedBy = "commentator", fetch = FetchType.LAZY)
+    private List<Comment> userComments;
 
     public User(Long id, String name, String email) {
         this.id = id;

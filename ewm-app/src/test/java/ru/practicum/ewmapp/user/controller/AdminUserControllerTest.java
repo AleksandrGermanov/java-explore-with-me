@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcriteriaBuilderuilders;
 import ru.practicum.ewmapp.exception.ExceptionControllerAdvice;
 import ru.practicum.ewmapp.user.dto.UserDto;
 import ru.practicum.ewmapp.user.service.UserService;
@@ -42,7 +42,7 @@ class AdminUserControllerTest {
     public void setup() {
         userDto = new UserDto(0L, "name", "e@ma.il");
 
-        mockMvc = MockMvcBuilders
+        mockMvc = MockMvcriteriaBuilderuilders
                 .standaloneSetup(adminUserController)
                 .setControllerAdvice(ExceptionControllerAdvice.class)
                 .build();

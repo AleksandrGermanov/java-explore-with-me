@@ -42,16 +42,16 @@ class EventMapperImplTest {
         eventDate = LocalDateTime.of(2025, 2, 2, 2, 2, 2);
         event = new Event(0L, "annotation", category, Collections.emptyList(), createdOn,
                 "description", eventDate, user, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L, null, null);
+                "title", 0L, null, null, null, null);
         event.setState(EventState.PENDING);
         newEventDto = new NewEventDto("annotation", 0L,
                 "description", eventDate, location, true, 1, true,
-                "title");
+                "title", null);
         eventShortDto = new EventShortDto(0L, "annotation", categoryDto, 0L,
-                eventDate, userShortDto, true, "title", 0L);
+                eventDate, userShortDto, true, "title", 0L, null);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L);
+                "title", 0L,null,null);
     }
 
     @Test
@@ -72,6 +72,7 @@ class EventMapperImplTest {
 
     @Test
     void eventFullDtoFromEvent() {
-        Assertions.assertEquals(eventFullDto, eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto));
+        Assertions.assertEquals(eventFullDto, eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto,
+                null));
     }
 }

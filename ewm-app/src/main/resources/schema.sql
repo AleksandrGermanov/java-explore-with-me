@@ -33,7 +33,8 @@ participant_limit INT,
 published_on TIMESTAMP,
 request_moderation BOOLEAN,
 state VARCHAR(16),
-title VARCHAR(120) NOT NULL
+title VARCHAR(120) NOT NULL,
+permit_comments BOOLEAN NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS compilations_events(
@@ -48,4 +49,14 @@ created TIMESTAMP NOT NULL,
 event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
 requester_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
 status VARCHAR(16) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS comments(
+id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+created_on TIMESTAMP NOT NULL,
+event_id BIGINT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+commentator_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+text VARCHAR(2000) NOT NULL,
+user_state VARCHAR(16) NOT NULL,
+comment_state VARCHAR(16) NOT NULL
 );

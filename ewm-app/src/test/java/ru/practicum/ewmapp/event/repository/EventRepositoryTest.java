@@ -63,17 +63,17 @@ class EventRepositoryTest {
         event1 = new Event(null, "1".repeat(50), category1, Collections.emptyList(), createdOn2024,
                 "x".repeat(50), eventDate2024, user1, location1, true, 1,
                 publishedOn2024, true, EventState.PUBLISHED,
-                "title1", 0L, null, null);
+                "title1", 0L, null, null, null, null);
         event1.setState(EventState.PUBLISHED);
         event2 = new Event(null, "2".repeat(50), category2, Collections.emptyList(), createdOn2025,
                 "y".repeat(50), eventDate2025, user2, location2, false, 2,
                 publishedOn2025, false, EventState.PUBLISHED,
-                "title2", 0L, null, null);
+                "title2", 0L, null, null,null, null);
         event2.setState(EventState.CANCELED);
         event3 = new Event(null, "3".repeat(50), category3, Collections.emptyList(), createdOn2026,
                 "12".repeat(25), eventDate2026, user3, location3, false, 3,
                 publishedOn2026, true, EventState.PENDING,
-                "title1", 0L, null, null);
+                "title1", 0L, null, null, null, null);
         event3.setState(EventState.PENDING);
         List.of(event1, event2, event3).forEach(e -> e = eventRepository.save(e));
 

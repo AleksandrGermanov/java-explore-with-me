@@ -1,14 +1,14 @@
 package ru.practicum.ewmapp.event.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.practicum.ewmapp.event.model.Event;
 import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.service.PublicEventSortType;
+import ru.practicum.ewmapp.util.CustomRepository;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.sql.Timestamp;
@@ -17,13 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class CustomEventRepositoryImpl implements CustomEventRepository {
-    private final EntityManager entityManager;
-    private final CriteriaBuilder criteriaBuilder;
+public class CustomEventRepositoryImpl extends CustomRepository<Event> implements CustomEventRepository {
 
-    public CustomEventRepositoryImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-        criteriaBuilder = entityManager.getCriteriaBuilder();
+    public CustomEventRepositoryImpl(@Autowired EntityManager entityManager) {
+        super(entityManager, Event.class);
     }
 
     @Override
@@ -31,8 +28,29 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
                                             LocalDateTime rangeStart, LocalDateTime rangeEnd,
                                             Boolean onlyAvailable, PublicEventSortType sort,
                                             Integer from, Integer size) {
-        CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
-        Root<Event> eventRoot = criteriaQuery.from(Event.class);
+        return getBuilder()
+                .setPredicates((criteriaBuilder, root)->predicatesForUser(criteriaBuilder, root,
+                        text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable))
+                .sortBy((criteriaBuilder, root) -> sort == null ? null : sort.getOrder(criteriaBuilder, root))
+                .formTypedQuery(from, size)
+                .getResultList();
+    }
+
+    public List<Event> findAllEventsForAdmin(List<Long> userIds, List<EventState> states,
+                                             LocalDateTime rangeStart,
+                                             LocalDateTime rangeEnd,
+                                             Integer from, Integer size) {
+        return getBuilder()
+                .setPredicates(((criteriaBuilder, root) -> predicatesForAdmin(criteriaBuilder, root,
+                        userIds, states, rangeStart, rangeEnd)))
+                .formTypedQuery(from, size)
+                .getResultList();
+    }
+
+    private List<Predicate> predicatesForUser(CriteriaBuilder criteriaBuilder, Root<Event> eventRoot,
+                                              String text, List<Long> categoryIds, Boolean paid,
+                                              LocalDateTime rangeStart, LocalDateTime rangeEnd,
+                                              Boolean onlyAvailable){
         List<Predicate> predicates = new ArrayList<>();
 
         if (text != null && !text.isEmpty()) {
@@ -67,28 +85,14 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
         }
         if (onlyAvailable) {
             predicates.add(criteriaBuilder.greaterThan(eventRoot.get("participantLimit").as(Integer.class),
-                    criteriaBuilder.size(eventRoot.get("requestsForEvent")))); //три часа потратил
-            //на эту строчку - коллекции считаются методом size, а не count... И никто об этом не пишет!
+                    criteriaBuilder.size(eventRoot.get("requestsForEvent"))));
         }
-        criteriaQuery.where(predicates.toArray(new Predicate[0]));
-
-        if (sort != null && sort.equals(PublicEventSortType.EVENT_DATE)) {
-            criteriaQuery.orderBy(criteriaBuilder.desc(eventRoot.get("eventDate")));
-        }
-
-        int offset = from / size;
-        TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery);
-        typedQuery.setFirstResult(offset * size);
-        typedQuery.setMaxResults(size);
-        return typedQuery.getResultList();
+        return predicates;
     }
 
-    public List<Event> findAllEventsForAdmin(List<Long> userIds, List<EventState> states,
-                                             LocalDateTime rangeStart,
-                                             LocalDateTime rangeEnd,
-                                             Integer from, Integer size) {
-        CriteriaQuery<Event> criteriaQuery = criteriaBuilder.createQuery(Event.class);
-        Root<Event> eventRoot = criteriaQuery.from(Event.class);
+    private List<Predicate> predicatesForAdmin (CriteriaBuilder criteriaBuilder, Root<Event> eventRoot,
+                                                List<Long> userIds, List<EventState> states,
+                                                LocalDateTime rangeStart, LocalDateTime rangeEnd){
         List<Predicate> predicates = new ArrayList<>();
 
         if (userIds != null && !userIds.isEmpty()) {
@@ -105,14 +109,6 @@ public class CustomEventRepositoryImpl implements CustomEventRepository {
             predicates.add(criteriaBuilder.lessThanOrEqualTo(eventRoot.get("eventDate").as(Timestamp.class),
                     Timestamp.valueOf(rangeEnd)));
         }
-
-        if (!predicates.isEmpty()) {
-            criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        }
-        int offset = from / size;
-        TypedQuery<Event> typedQuery = entityManager.createQuery(criteriaQuery);
-        typedQuery.setFirstResult(offset * size);
-        typedQuery.setMaxResults(size);
-        return typedQuery.getResultList();
+        return predicates;
     }
 }

@@ -9,6 +9,7 @@ import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.category.dto.CategoryMapper;
 import ru.practicum.ewmapp.category.model.Category;
 import ru.practicum.ewmapp.category.service.CategoryService;
+import ru.practicum.ewmapp.comments.dto.CommentShortDto;
 import ru.practicum.ewmapp.event.dto.EventFullDto;
 import ru.practicum.ewmapp.event.dto.EventMapper;
 import ru.practicum.ewmapp.event.dto.EventShortDto;
@@ -36,6 +37,7 @@ import ru.practicum.ewmapp.util.PaginationInfo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -407,6 +409,8 @@ public class EventServiceImpl implements EventService {
     private EventFullDto mapEventFullDtoFromEvent(Event event) {
         CategoryDto categoryDto = categoryMapper.categoryDtoFromCategory(event.getCategory());
         UserShortDto initiatorDto = userMapper.userShortDtoFromUser(event.getInitiator());
-        return eventMapper.eventFullDtoFromEvent(event, categoryDto, initiatorDto);
+        //TODO заглушка
+        List<CommentShortDto> comments = Collections.emptyList();
+        return eventMapper.eventFullDtoFromEvent(event, categoryDto, initiatorDto, comments);
     }
 }

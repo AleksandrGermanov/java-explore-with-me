@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcriteriaBuilderuilders;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.event.dto.EventFullDto;
 import ru.practicum.ewmapp.event.model.EventState;
@@ -55,9 +55,9 @@ class AdminEventControllerTest {
         LocalDateTime eventDate = LocalDateTime.of(2025, 2, 2, 2, 2, 2);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L);
+                "title", 0L, null, null);
 
-        mockMvc = MockMvcBuilders
+        mockMvc = MockMvcriteriaBuilderuilders
                 .standaloneSetup(adminEventController)
                 .setControllerAdvice(ExceptionControllerAdvice.class)
                 .build();

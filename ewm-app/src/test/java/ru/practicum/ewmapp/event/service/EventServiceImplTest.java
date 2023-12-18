@@ -107,16 +107,16 @@ class EventServiceImplTest {
         eventDate = LocalDateTime.of(2025, 2, 2, 2, 2, 2);
         event = new Event(0L, "annotation", category, Collections.emptyList(), createdOn,
                 "description", eventDate, user, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L, null, null);
+                "title", 0L, null, null, null, null);
         event.setState(EventState.PENDING);
         newEventDto = new NewEventDto("annotation", 0L,
                 "description", eventDate, location, true, 1, true,
-                "title");
+                "title", null);
         eventShortDto = new EventShortDto(0L, "annotation", categoryDto, 0L,
-                eventDate, userShortDto, true, "title", 0L);
+                eventDate, userShortDto, true, "title", 0L, null);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L);
+                "title", 0L,  null, null);
         request1 = new ParticipationRequest(
                 1L, null, event, new User(999L, "", ""),
                 ParticipationRequestStatus.PENDING);
@@ -167,7 +167,7 @@ class EventServiceImplTest {
                 .thenReturn(userShortDto);
         when(eventRepository.save(event))
                 .thenReturn(event);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto, eventService.createEvent(0L, newEventDto));
@@ -181,7 +181,7 @@ class EventServiceImplTest {
                 .thenReturn(categoryDto);
         when(userMapper.userShortDtoFromUser(user))
                 .thenReturn(userShortDto);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto, eventService.findByUserAndById(0L, 0L));
@@ -221,7 +221,7 @@ class EventServiceImplTest {
                 .thenReturn(categoryDto);
         when(userMapper.userShortDtoFromUser(user))
                 .thenReturn(userShortDto);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
                 .thenReturn(eventFullDto);
 
         eventFullDto.setState(EventState.CANCELED);
@@ -243,7 +243,7 @@ class EventServiceImplTest {
                 .thenReturn(categoryDto);
         when(userMapper.userShortDtoFromUser(user))
                 .thenReturn(userShortDto);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto,
@@ -478,7 +478,7 @@ class EventServiceImplTest {
     void retrievePublishedEventReturnsValue() {
         when(eventRepository.findEventByIdAndState(0L, EventState.PUBLISHED))
                 .thenReturn(Optional.of(event));
-        when(eventMapper.eventFullDtoFromEvent(any(), any(), any()))
+        when(eventMapper.eventFullDtoFromEvent(any(), any(), any(), any()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto, eventService.retrievePublishedEvent(0L, "", ""));
@@ -500,7 +500,7 @@ class EventServiceImplTest {
                 .thenReturn(Optional.of(event));
         when(eventRepository.save(event))
                 .thenReturn(event);
-        when(eventMapper.eventFullDtoFromEvent(any(), any(), any()))
+        when(eventMapper.eventFullDtoFromEvent(any(), any(), any(), any()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto,
@@ -536,7 +536,7 @@ class EventServiceImplTest {
                 .thenReturn(Optional.of(event));
         when(eventRepository.save(event))
                 .thenReturn(event);
-        when(eventMapper.eventFullDtoFromEvent(any(), any(), any()))
+        when(eventMapper.eventFullDtoFromEvent(any(), any(), any(), any()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertDoesNotThrow(
@@ -562,7 +562,7 @@ class EventServiceImplTest {
                 .thenReturn(Optional.of(event));
         when(eventRepository.save(event))
                 .thenReturn(event);
-        when(eventMapper.eventFullDtoFromEvent(any(), any(), any()))
+        when(eventMapper.eventFullDtoFromEvent(any(), any(), any(), any()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertDoesNotThrow(
@@ -573,7 +573,7 @@ class EventServiceImplTest {
     void findAllEventsForAdminReturnsValue() {
         when(eventRepository.findAllEventsForAdmin(any(), any(), any(), any(), any(), any()))
                 .thenReturn(List.of(event));
-        when(eventMapper.eventFullDtoFromEvent(any(), any(), any()))
+        when(eventMapper.eventFullDtoFromEvent(any(), any(), any(), any()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(List.of(eventFullDto), eventService.findAllEventsForAdmin(null,
