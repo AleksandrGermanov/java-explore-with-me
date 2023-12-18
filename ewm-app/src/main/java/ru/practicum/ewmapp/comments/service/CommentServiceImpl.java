@@ -16,6 +16,7 @@ import ru.practicum.ewmapp.event.service.EventService;
 import ru.practicum.ewmapp.exception.mismatch.CommentStateMismatchException;
 import ru.practicum.ewmapp.exception.mismatch.CommentatorMismatchException;
 import ru.practicum.ewmapp.exception.notfound.CommentNotFoundException;
+import ru.practicum.ewmapp.exception.other.CommentsAreNotAllowedException;
 import ru.practicum.ewmapp.exception.other.RequestParametersMisusageException;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 import ru.practicum.ewmapp.user.dto.UserDto;
@@ -39,8 +40,9 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentShortDto createComment(Long userId, Long eventId, NewCommentDto newCommentDto) {
-        User commentator = userService.findUserByIdOrThrow(userId);
         Event event = eventService.findEventByIdOrThrow(eventId);
+        throwIfCommentsAreNotPermitted(event);
+        User commentator = userService.findUserByIdOrThrow(userId);
         UserState userState = defineUserState(commentator, event);
         Comment comment = commentMapper.commentFromNewDto(event, commentator,
                 newCommentDto, userState);
@@ -122,31 +124,24 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentShortDto> findAllCommentsForAdmin(Long eventId, List<Long> userIds,
                                                          UserState userState, CommentState commentState,
                                                          CommentSortType sort, Integer from, Integer size) {
-        Event event = eventId == null ? null
-                : eventService.findEventByIdOrThrow(eventId);
-        if (userIds != null) {
-            userIds.forEach(userService::throwIfUserNotExists);
-        }
-        if (userState != null && userIds != null && !userIds.isEmpty()) {
-            throw new RequestParametersMisusageException(String.format("Parameters userIds and "
-                    + "userState cannot be used together. UserIds = %s, userState = %s", userIds, userState));
-        }
+        Event event = eventId == null ? null : eventService.findEventByIdOrThrow(eventId);
+
+        throwIfUserInUserIdsNotExists(userIds);
+        throwIfUserIdsPassedWithUserState(userIds, userState);
         return commentRepository.findAllCommentsForAdmin(event, userIds, userState,
                         commentState, sort, from, size).stream()
                 .map(this::mapCommentToShortDto)
                 .collect(Collectors.toList());
     }
 
-
-
     @Override
     public CommentShortDto moderateComment(Long commentId, NewCommentDto newCommentDto) {
         Comment comment = findCommentByIdOrThrow(commentId);
+
         comment.setText(newCommentDto.getText());
         comment.setCommentState(CommentState.MODERATED);
         return mapCommentToShortDto(commentRepository.save(comment));
     }
-
 
     @Override
     public void deleteCommentByAdmin(Long commentId) {
@@ -192,6 +187,26 @@ public class CommentServiceImpl implements CommentService {
             throw new CommentStateMismatchException(String.format(
                     "Required operation is not supported for comment with given commentState. CommentId = %d, " +
                             "commentState = %s.", comment.getId(), comment.getCommentState()));
+        }
+    }
+
+    private void throwIfCommentsAreNotPermitted(Event event) {
+        if(!event.getPermitComments()){
+            throw new CommentsAreNotAllowedException(String.format("Comments are not allowed for this event. "
+            +"EventId = %d", event.getId()));
+        }
+    }
+
+    private void throwIfUserIdsPassedWithUserState(List<Long> userIds, UserState userState) {
+        if (userState != null && userIds != null && !userIds.isEmpty()) {
+            throw new RequestParametersMisusageException(String.format("Parameters userIds and "
+                    + "userState cannot be used together. UserIds = %s, userState = %s", userIds, userState));
+        }
+    }
+
+    private void throwIfUserInUserIdsNotExists(List<Long> userIds) {
+        if (userIds != null) {
+            userIds.forEach(userService::throwIfUserNotExists);
         }
     }
 

@@ -12,10 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.ewmapp.exception.mismatch.EventDateMismatchException;
 import ru.practicum.ewmapp.exception.mismatch.MismatchException;
 import ru.practicum.ewmapp.exception.notfound.NotFoundException;
-import ru.practicum.ewmapp.exception.other.ModerationNotRequiredException;
-import ru.practicum.ewmapp.exception.other.ParticipantLimitReachedException;
-import ru.practicum.ewmapp.exception.other.RequestAlreadyExistsException;
-import ru.practicum.ewmapp.exception.other.StartIsAfterEndException;
+import ru.practicum.ewmapp.exception.other.*;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
@@ -41,7 +38,8 @@ public class ExceptionControllerAdvice {
             ParticipantLimitReachedException.class,
             RequestAlreadyExistsException.class,
             ModerationNotRequiredException.class,
-            DataIntegrityViolationException.class})
+            DataIntegrityViolationException.class,
+            CommentsAreNotAllowedException.class})
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflict(Exception e) {
         String reason = "Requirements for the operation were not met.";
@@ -87,7 +85,8 @@ public class ExceptionControllerAdvice {
     @ExceptionHandler({MissingServletRequestParameterException.class,
             StartIsAfterEndException.class,
             EventDateMismatchException.class,
-            TransactionSystemException.class})
+            TransactionSystemException.class,
+            RequestParametersMisusageException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleBadRequest(Exception e) {
         String reason = "One or several request parameters did not pass the validation.";
