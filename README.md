@@ -1,5 +1,9 @@
 # java-explore-with-me
 
+### *Ссылка на pull-request*
+
+> https://github.com/AleksandrGermanov/java-explore-with-me/pull/3
+
 ## Задачи третьего этапа проектной работы _(реализация собственной функциональности)_
 
 ### Формат:
