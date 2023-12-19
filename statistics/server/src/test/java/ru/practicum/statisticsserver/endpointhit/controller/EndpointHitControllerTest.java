@@ -14,7 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcriteriaBuilderuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.commondtolib.EndpointHitDto;
 import ru.practicum.commondtolib.StatsViewDto;
 import ru.practicum.statisticsserver.endpointhit.service.EndpointHitService;
@@ -47,7 +47,7 @@ public class EndpointHitControllerTest {
     public void setup() {
         FormattingConversionService formattingConversionService = new FormattingConversionService();
         formattingConversionService.addConverter(formattedStringToLocalDateTimeConverter);
-        mockMvc = MockMvcriteriaBuilderuilders
+        mockMvc = MockMvcBuilders
                 .standaloneSetup(endpointHitController)
                 .setControllerAdvice(ExceptionControllerAdvice.class)
                 .setConversionService(formattingConversionService)

@@ -97,7 +97,7 @@ public class PrivateEventController {
                                                          @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
                                                          @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Processing incoming request GET /users/{}/events/{}/comments. UserState = {}, commentState = {},"
-                + "from = {}, size = {}.",
+                        + "from = {}, size = {}.",
                 userId, eventId, userState, commentState, from, size);
         return commentService.findAllCommentsForEvent(userId, eventId, userState, commentState, from, size);
     }

@@ -20,17 +20,18 @@ import java.util.List;
 @Slf4j
 @Validated
 @RequiredArgsConstructor
-@RestController("/users/{userId}/comments")
+@RestController
+@RequestMapping("/users/{userId}/comments")
 public class PrivateCommentController {
     private final CommentService commentService;
 
     @GetMapping
     public List<CommentShortDto> findAllCommentsForUser(@PathVariable Long userId,
-                                                       @RequestParam(required = false) Long eventId,
-                                                       @RequestParam(required = false) CommentState commentState,
-                                                       @RequestParam(defaultValue = "DATE_DESC") CommentSortType sort,
-                                                       @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
-                                                       @RequestParam(defaultValue = "10") @Positive Integer size) {
+                                                        @RequestParam(required = false) Long eventId,
+                                                        @RequestParam(required = false) CommentState commentState,
+                                                        @RequestParam(defaultValue = "DATE_DESC") CommentSortType sort,
+                                                        @RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                        @RequestParam(defaultValue = "10") @Positive Integer size) {
         log.info("Processing incoming request GET /users/{}/comments. "
                         + "EventId = {}, commentState = commentState = {}, sotType  = {}, from = {}, size = {}.",
                 userId, eventId, commentState, sort, from, size);

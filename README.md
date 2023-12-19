@@ -51,11 +51,10 @@
 
 - **создать `AdminCommentController`**
 - **Добавить маппинг `(List<CommentFullDto>)
-  GET /admin/comments?eventId={eventId}&userIds={[userIds]}&userState={userState}
+  GET /admin/comments/all?eventId={eventId}&userIds={[userIds]}&userState={userState}
   &commentState={commentState}&sort={sort}&from={from}&size={size}`** :
   получение комментариев c фильтрацией по событию, комментаторам, состоянию пользователя,
-  состоянию комментария, с опциональными queryParams,
-  `userState` нельзя использовать с `userIds`
+  состоянию комментария, с опциональными queryParams
   `sort = CREATED_ASC, (default)CREATED_DESC, COMMENTATOR_ID`.
 - **Добавить маппинг `(CommentFullDto) GET /admin/comments/{commentId}`** :
   получение конкретного комментария.
@@ -70,7 +69,7 @@
   только для комментариев с `CommentState = DELETED_BY_USER`,  проверка userId = commentatorId, новый `CommentState = UPDATED`
   <br><br>
 
-- **Добавить маппинг `PATCH /admin/comments/{commentId}`** : `CommentState = MODERATED`, принимает `NewCommentDto`
+- **Добавить маппинг `PATCH /admin/comments/{commentId}/moderate`** : `CommentState = MODERATED`, принимает `NewCommentDto`
 
 ### Декларировать возможность удаления комментариев для администраторов
 
@@ -87,8 +86,7 @@
 > Имя ошибки (код) <- сценарий возниконовения.<br>
 > - CommentatorMismatchException (409) <- когда id пользователя не совпадает с id комментатора.<br>
 > - RequestParametersMisusageException (400) <- неправильное использоване параметров запроса 
-  (сортировка COMMENTATOR_ID, когда производится поиск комментариев пользователя,
-  или совместное использование фильтров UserIds и UserStatus в поиске для администраторов).<br>
+  (сортировка COMMENTATOR_ID, когда производится поиск комментариев пользователя).<br>
 > - CommentStateMismatchException (409) <- несовпадение статуса комментария для требуемой операции.<br>
 > - CommentNotFoundException (404)<- запрашиваемый комментарий не найден в БД.<br>
 > - CommentsAreNotAllowedException (409) <- комментарии не разрешены для размещения для данного события.

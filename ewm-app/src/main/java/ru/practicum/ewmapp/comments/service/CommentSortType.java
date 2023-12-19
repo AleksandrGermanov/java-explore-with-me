@@ -10,7 +10,7 @@ import javax.persistence.criteria.Root;
 
 @RequiredArgsConstructor
 public enum CommentSortType {
-    DATE_ASC{
+    DATE_ASC {
         @Override
         public Order getOrder(CriteriaBuilder criteriaBuilder, Root<Comment> root) {
             return criteriaBuilder.asc(root.get("createdOn"));

@@ -27,4 +27,4 @@ public enum PublicEventSortType {
     };
 
     public abstract Order getOrder(CriteriaBuilder criteriaBuilder, Root<Event> root);
-    }
+}

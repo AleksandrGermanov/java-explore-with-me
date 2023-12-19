@@ -41,7 +41,7 @@ public class JacksonNewEventDtoDeserializer extends StdDeserializer<NewEventDto>
         Boolean requestModeration = node.get("requestModeration") == null || node.get("requestModeration").asBoolean();
         String title = node.get("title") == null ? null
                 : node.get("title").asText();
-        Boolean permitComments = node.get("permitComments") == null ||  node.get("permitComments").asBoolean();
+        Boolean permitComments = node.get("permitComments") == null || node.get("permitComments").asBoolean();
         return new NewEventDto(annotation, category, description, eventDate,
                 location, paid, participantLimit, requestModeration, title, permitComments);
     }

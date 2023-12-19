@@ -29,7 +29,7 @@ public class CustomEventRepositoryImpl extends CustomRepository<Event> implement
                                             Boolean onlyAvailable, PublicEventSortType sort,
                                             Integer from, Integer size) {
         return getBuilder()
-                .setPredicates((criteriaBuilder, root)->predicatesForUser(criteriaBuilder, root,
+                .setPredicates((criteriaBuilder, root) -> predicatesForUser(criteriaBuilder, root,
                         text, categoryIds, paid, rangeStart, rangeEnd, onlyAvailable))
                 .sortBy((criteriaBuilder, root) -> sort == null ? null : sort.getOrder(criteriaBuilder, root))
                 .formTypedQuery(from, size)
@@ -50,7 +50,7 @@ public class CustomEventRepositoryImpl extends CustomRepository<Event> implement
     private List<Predicate> predicatesForUser(CriteriaBuilder criteriaBuilder, Root<Event> eventRoot,
                                               String text, List<Long> categoryIds, Boolean paid,
                                               LocalDateTime rangeStart, LocalDateTime rangeEnd,
-                                              Boolean onlyAvailable){
+                                              Boolean onlyAvailable) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (text != null && !text.isEmpty()) {
@@ -90,9 +90,9 @@ public class CustomEventRepositoryImpl extends CustomRepository<Event> implement
         return predicates;
     }
 
-    private List<Predicate> predicatesForAdmin (CriteriaBuilder criteriaBuilder, Root<Event> eventRoot,
-                                                List<Long> userIds, List<EventState> states,
-                                                LocalDateTime rangeStart, LocalDateTime rangeEnd){
+    private List<Predicate> predicatesForAdmin(CriteriaBuilder criteriaBuilder, Root<Event> eventRoot,
+                                               List<Long> userIds, List<EventState> states,
+                                               LocalDateTime rangeStart, LocalDateTime rangeEnd) {
         List<Predicate> predicates = new ArrayList<>();
 
         if (userIds != null && !userIds.isEmpty()) {

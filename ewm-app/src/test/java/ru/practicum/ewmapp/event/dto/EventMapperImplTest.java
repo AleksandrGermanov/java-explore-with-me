@@ -48,10 +48,10 @@ class EventMapperImplTest {
                 "description", eventDate, location, true, 1, true,
                 "title", null);
         eventShortDto = new EventShortDto(0L, "annotation", categoryDto, 0L,
-                eventDate, userShortDto, true, "title", 0L, null);
+                eventDate, userShortDto, true, "title", 0L, 0L);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L,null,null);
+                "title", 0L, null, null);
     }
 
     @Test

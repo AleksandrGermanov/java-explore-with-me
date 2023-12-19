@@ -19,6 +19,8 @@ public class EventMapperImpl implements EventMapper {
     public EventShortDto eventShortDtoFromEvent(Event event, CategoryDto categoryDto, UserShortDto initiatorDto) {
         long confirmedRequestsSize = event.getConfirmedRequests() == null ? 0
                 : event.getConfirmedRequests().size();
+        long commentsSize = event.getComments() == null ? 0 : event.getComments().size();
+
         return new EventShortDto(event.getId(),
                 event.getAnnotation(),
                 categoryDto,
@@ -28,7 +30,7 @@ public class EventMapperImpl implements EventMapper {
                 event.getPaid(),
                 event.getTitle(),
                 event.getViews(),
-                (long)event.getComments().size());
+                commentsSize);
     }
 
     @Override

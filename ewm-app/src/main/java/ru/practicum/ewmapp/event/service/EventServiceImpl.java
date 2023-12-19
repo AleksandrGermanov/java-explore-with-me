@@ -9,6 +9,7 @@ import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.category.dto.CategoryMapper;
 import ru.practicum.ewmapp.category.model.Category;
 import ru.practicum.ewmapp.category.service.CategoryService;
+import ru.practicum.ewmapp.comments.dto.CommentMapper;
 import ru.practicum.ewmapp.comments.dto.CommentShortDto;
 import ru.practicum.ewmapp.event.dto.EventFullDto;
 import ru.practicum.ewmapp.event.dto.EventMapper;
@@ -37,10 +38,7 @@ import ru.practicum.ewmapp.util.PaginationInfo;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +53,7 @@ public class EventServiceImpl implements EventService {
     private final EventMapper eventMapper;
     private final UserMapper userMapper;
     private final CategoryMapper categoryMapper;
+    private final CommentMapper commentMapper;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
@@ -142,7 +141,7 @@ public class EventServiceImpl implements EventService {
         }
         return events.stream()
                 .map(this::setViewsForEvent)
-                .sorted((e1, e2) -> (int) (e1.getViews() - e2.getViews()))
+                .sorted(Comparator.comparingLong(Event::getViews))
                 .map(this::mapEventShortDtoFromEvent)
                 .collect(Collectors.toList());
     }
@@ -215,6 +214,15 @@ public class EventServiceImpl implements EventService {
         UserShortDto initiatorDto = userMapper.userShortDtoFromUser(event.getInitiator());
         return eventMapper.eventShortDtoFromEvent(event, categoryDto, initiatorDto);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void throwIfEventNotExists(Long eventId) {
+        if (!eventRepository.existsById(eventId)) {
+            throw new EventNotFoundException(String.format("Event with id = %d does not exist.", eventId));
+        }
+    }
+
 
     private Event setViewsForEvent(Event event) {
         List<StatsViewDto> viewDtoList = endpointHitClient.retrieveStatsViewList(event.getCreatedOn(),
@@ -335,11 +343,45 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    private void throwIfEventInitiatorIdAndUserIdDiffer(Event event, Long userId) {
+        if (!event.getInitiator().getId().equals(userId)) {
+            throw new InitiatorMismatchException(String.format("Requested event has another initiator." +
+                    " EventId = %d, userId = %d", event.getId(), userId));
+        }
+    }
+
+    private void throwIfRequestStatusIsNotPendingForStatusUpdate(EventRequestStatusUpdateRequest updateRequest,
+                                                                 List<ParticipationRequest> pendingRequests) {
+        Set<Long> pendingRequestsIds = pendingRequests.stream()
+                .map(ParticipationRequest::getId)
+                .collect(Collectors.toSet());
+        updateRequest.getRequestIds()
+                .forEach(id -> {
+                    if (!pendingRequestsIds.contains(id)) {
+                        throw new RequestIdMismatchException(String.format("Status can be changed only for"
+                                + " requests with PENDING status. Request with id = %d may be with "
+                                + "the other status.", id));
+                    }
+                });
+    }
+
+    private EventFullDto mapEventFullDtoFromEvent(Event event) {
+        CategoryDto categoryDto = categoryMapper.categoryDtoFromCategory(event.getCategory());
+        UserShortDto initiatorDto = userMapper.userShortDtoFromUser(event.getInitiator());
+        List<CommentShortDto> comments = event.getComments() == null ? Collections.emptyList()
+                : event.getComments().stream()
+                .map(comment -> commentMapper.shortDtoFromComment(comment,
+                        userMapper.userShortDtoFromUser(comment.getCommentator())))
+                .collect(Collectors.toList());
+        return eventMapper.eventFullDtoFromEvent(event, categoryDto, initiatorDto, comments);
+    }
+
     private void mergeUserRequestIntoEvent(UpdateEventUserRequest request, Event event) {
         if (event.getState().equals(EventState.PUBLISHED)) {
             throw new EventStateMismatchException(String.format("Event with id = %d is already published.",
                     event.getId()));
         }
+
         mergeRequestCommonPartIntoEvent(event, request);
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new EventDateMismatchException(String.format("Event update time requirement is not met." +
@@ -382,35 +424,5 @@ public class EventServiceImpl implements EventService {
         if (request.getTitle() != null) {
             event.setTitle(request.getTitle());
         }
-    }
-
-    private void throwIfEventInitiatorIdAndUserIdDiffer(Event event, Long userId) {
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new InitiatorMismatchException(String.format("Requested event has another initiator." +
-                    " EventId = %d, userId = %d", event.getId(), userId));
-        }
-    }
-
-    private void throwIfRequestStatusIsNotPendingForStatusUpdate(EventRequestStatusUpdateRequest updateRequest,
-                                                                 List<ParticipationRequest> pendingRequests) {
-        Set<Long> pendingRequestsIds = pendingRequests.stream()
-                .map(ParticipationRequest::getId)
-                .collect(Collectors.toSet());
-        updateRequest.getRequestIds()
-                .forEach(id -> {
-                    if (!pendingRequestsIds.contains(id)) {
-                        throw new RequestIdMismatchException(String.format("Status can be changed only for"
-                                + " requests with PENDING status. Request with id = %d may be with "
-                                + "the other status.", id));
-                    }
-                });
-    }
-
-    private EventFullDto mapEventFullDtoFromEvent(Event event) {
-        CategoryDto categoryDto = categoryMapper.categoryDtoFromCategory(event.getCategory());
-        UserShortDto initiatorDto = userMapper.userShortDtoFromUser(event.getInitiator());
-        //TODO заглушка
-        List<CommentShortDto> comments = Collections.emptyList();
-        return eventMapper.eventFullDtoFromEvent(event, categoryDto, initiatorDto, comments);
     }
 }

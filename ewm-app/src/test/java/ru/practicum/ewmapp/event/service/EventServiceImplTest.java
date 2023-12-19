@@ -1,6 +1,5 @@
 package ru.practicum.ewmapp.event.service;
 
-import lombok.Setter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,7 +51,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-@Setter
 class EventServiceImplTest {
     @InjectMocks
     private EventServiceImpl eventService;
@@ -116,7 +114,7 @@ class EventServiceImplTest {
                 eventDate, userShortDto, true, "title", 0L, null);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L,  null, null);
+                "title", 0L, null, null);
         request1 = new ParticipationRequest(
                 1L, null, event, new User(999L, "", ""),
                 ParticipationRequestStatus.PENDING);
@@ -167,7 +165,7 @@ class EventServiceImplTest {
                 .thenReturn(userShortDto);
         when(eventRepository.save(event))
                 .thenReturn(event);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, Collections.emptyList()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto, eventService.createEvent(0L, newEventDto));
@@ -181,7 +179,7 @@ class EventServiceImplTest {
                 .thenReturn(categoryDto);
         when(userMapper.userShortDtoFromUser(user))
                 .thenReturn(userShortDto);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, Collections.emptyList()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto, eventService.findByUserAndById(0L, 0L));
@@ -221,7 +219,7 @@ class EventServiceImplTest {
                 .thenReturn(categoryDto);
         when(userMapper.userShortDtoFromUser(user))
                 .thenReturn(userShortDto);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, Collections.emptyList()))
                 .thenReturn(eventFullDto);
 
         eventFullDto.setState(EventState.CANCELED);
@@ -243,7 +241,7 @@ class EventServiceImplTest {
                 .thenReturn(categoryDto);
         when(userMapper.userShortDtoFromUser(user))
                 .thenReturn(userShortDto);
-        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, null))
+        when(eventMapper.eventFullDtoFromEvent(event, categoryDto, userShortDto, Collections.emptyList()))
                 .thenReturn(eventFullDto);
 
         Assertions.assertEquals(eventFullDto,

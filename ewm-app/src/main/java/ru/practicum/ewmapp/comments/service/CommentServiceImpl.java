@@ -2,6 +2,7 @@ package ru.practicum.ewmapp.comments.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmapp.comments.dto.CommentFullDto;
 import ru.practicum.ewmapp.comments.dto.CommentMapper;
 import ru.practicum.ewmapp.comments.dto.CommentShortDto;
@@ -19,7 +20,6 @@ import ru.practicum.ewmapp.exception.notfound.CommentNotFoundException;
 import ru.practicum.ewmapp.exception.other.CommentsAreNotAllowedException;
 import ru.practicum.ewmapp.exception.other.RequestParametersMisusageException;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
-import ru.practicum.ewmapp.user.dto.UserDto;
 import ru.practicum.ewmapp.user.dto.UserMapper;
 import ru.practicum.ewmapp.user.dto.UserShortDto;
 import ru.practicum.ewmapp.user.model.User;
@@ -37,8 +37,8 @@ public class CommentServiceImpl implements CommentService {
     private final UserMapper userMapper;
     private final EventService eventService;
 
-
     @Override
+    @Transactional
     public CommentShortDto createComment(Long userId, Long eventId, NewCommentDto newCommentDto) {
         Event event = eventService.findEventByIdOrThrow(eventId);
         throwIfCommentsAreNotPermitted(event);
@@ -46,37 +46,52 @@ public class CommentServiceImpl implements CommentService {
         UserState userState = defineUserState(commentator, event);
         Comment comment = commentMapper.commentFromNewDto(event, commentator,
                 newCommentDto, userState);
+
         return mapCommentToShortDto(commentRepository.save(comment));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentShortDto> findAllCommentsForEvent(Long userId, Long eventId,
                                                          UserState userState, CommentState commentState,
                                                          Integer from, Integer size) {
         userService.throwIfUserNotExists(userId);
-        Event event = eventService.findEventByIdOrThrow(eventId);
+        eventService.throwIfEventNotExists(eventId);
 
-        return commentRepository.findAllCommentsForEvent(event, userState, commentState, from, size).stream()
+        return commentRepository.findAllCommentsForEvent(eventId, userState, commentState, from, size).stream()
                 .map(this::mapCommentToShortDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommentShortDto> findAllCommentsForUser(Long userId, Long eventId, CommentState commentState,
                                                         CommentSortType sort, Integer from, Integer size) {
-        User user = userService.findUserByIdOrThrow(userId);
-        Event event = eventId == null ? null : eventService.findEventByIdOrThrow(eventId);
+        userService.throwIfUserNotExists(userId);
+        throwIfEventNotExistsExceptNull(eventId);
+        throwIfSortIsCommentatorId(sort);
 
-        if (CommentSortType.COMMENTATOR_ID.equals(sort)) {
-            throw new RequestParametersMisusageException("CommentSortType COMMENTATOR_ID is not allowed "
-                    + "for this search.");
-        }
-        return commentRepository.findAllCommentsForUser(user, event, commentState, sort, from, size).stream()
+        return commentRepository.findAllCommentsForUser(userId, eventId, commentState, sort, from, size).stream()
                 .map(this::mapCommentToShortDto)
                 .collect(Collectors.toList());
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<CommentFullDto> findAllCommentsForAdmin(Long eventId, List<Long> userIds,
+                                                        UserState userState, CommentState commentState,
+                                                        CommentSortType sort, Integer from, Integer size) {
+        throwIfEventNotExistsExceptNull(eventId);
+        throwIfUserInUserIdsNotExists(userIds);
+
+        return commentRepository.findAllCommentsForAdmin(eventId, userIds, userState,
+                        commentState, sort, from, size).stream()
+                .map(this::mapCommentToFullDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public CommentFullDto retrieveComment(Long userId, Long commentId) {
         userService.throwIfUserNotExists(userId);
         return mapCommentToFullDto(findCommentByIdOrThrow(commentId));
@@ -84,6 +99,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
+    @Transactional
     public CommentShortDto updateComment(Long userId, Long commentId, NewCommentDto newCommentDto) {
         userService.throwIfUserNotExists(userId);
         Comment comment = findCommentByIdOrThrow(commentId);
@@ -97,6 +113,7 @@ public class CommentServiceImpl implements CommentService {
 
 
     @Override
+    @Transactional
     public CommentShortDto removeCommentByUser(Long userId, Long commentId) {
         userService.throwIfUserNotExists(userId);
         Comment comment = findCommentByIdOrThrow(commentId);
@@ -105,10 +122,11 @@ public class CommentServiceImpl implements CommentService {
         throwIfCommentStateMismatched(List.of(
                 CommentState.POSTED, CommentState.UPDATED), comment);
         comment.setCommentState(CommentState.REMOVED_BY_USER);
-        return  mapCommentToShortDto(commentRepository.save(comment));
+        return mapCommentToShortDto(commentRepository.save(comment));
     }
 
     @Override
+    @Transactional
     public CommentShortDto restoreComment(Long userId, Long commentId) {
         userService.throwIfUserNotExists(userId);
         Comment comment = findCommentByIdOrThrow(commentId);
@@ -116,25 +134,12 @@ public class CommentServiceImpl implements CommentService {
         throwIfUserIsNotCommentator(userId, comment);
         throwIfCommentStateMismatched(List.of(
                 CommentState.REMOVED_BY_USER), comment);
-        comment.setCommentState(CommentState.REMOVED_BY_USER);
-        return  mapCommentToShortDto(commentRepository.save(comment));
+        comment.setCommentState(CommentState.UPDATED);
+        return mapCommentToShortDto(commentRepository.save(comment));
     }
 
     @Override
-    public List<CommentShortDto> findAllCommentsForAdmin(Long eventId, List<Long> userIds,
-                                                         UserState userState, CommentState commentState,
-                                                         CommentSortType sort, Integer from, Integer size) {
-        Event event = eventId == null ? null : eventService.findEventByIdOrThrow(eventId);
-
-        throwIfUserInUserIdsNotExists(userIds);
-        throwIfUserIdsPassedWithUserState(userIds, userState);
-        return commentRepository.findAllCommentsForAdmin(event, userIds, userState,
-                        commentState, sort, from, size).stream()
-                .map(this::mapCommentToShortDto)
-                .collect(Collectors.toList());
-    }
-
-    @Override
+    @Transactional
     public CommentShortDto moderateComment(Long commentId, NewCommentDto newCommentDto) {
         Comment comment = findCommentByIdOrThrow(commentId);
 
@@ -144,6 +149,7 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
+    @Transactional
     public void deleteCommentByAdmin(Long commentId) {
         throwIfCommentNotExists(commentId);
         commentRepository.deleteById(commentId);
@@ -153,7 +159,7 @@ public class CommentServiceImpl implements CommentService {
         if (commentator.equals(event.getInitiator())) {
             return UserState.INITIATOR;
         }
-        if (event.getRequestsForEvent().stream()
+        if (event.getRequestsForEvent() != null && event.getRequestsForEvent().stream()
                 .map(ParticipationRequest::getRequester)
                 .anyMatch(commentator::equals)) {
             return UserState.REQUESTER;
@@ -167,23 +173,28 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void throwIfCommentNotExists(Long commentId) {
-        if(!commentRepository.existsById(commentId)){
+        if (!commentRepository.existsById(commentId)) {
             throw new CommentNotFoundException(String.format(
                     "Comment with id = %d does not exist.", commentId));
         }
     }
 
-
-    private void throwIfUserIsNotCommentator(Long userId, Comment comment) {
-        if(userId.equals(comment.getCommentator().getId())){
-            throw new CommentatorMismatchException(String.format(
-                    "User is not a commentator. UserId = %d, commentId = %d",
-                    userId, comment.getCommentator().getId()));
+    private void throwIfEventNotExistsExceptNull(Long eventId) {
+        if (eventId != null) {
+            eventService.throwIfEventNotExists(eventId);
         }
     }
 
-    private void throwIfCommentStateMismatched(List<CommentState> states, Comment comment){
-        if(!states.contains(comment.getCommentState())){
+    private void throwIfUserIsNotCommentator(Long userId, Comment comment) {
+        if (!userId.equals(comment.getCommentator().getId())) {
+            throw new CommentatorMismatchException(String.format(
+                    "User is not a commentator. UserId = %d, commentId = %d",
+                    userId, comment.getId()));
+        }
+    }
+
+    private void throwIfCommentStateMismatched(List<CommentState> states, Comment comment) {
+        if (!states.contains(comment.getCommentState())) {
             throw new CommentStateMismatchException(String.format(
                     "Required operation is not supported for comment with given commentState. CommentId = %d, " +
                             "commentState = %s.", comment.getId(), comment.getCommentState()));
@@ -191,16 +202,9 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void throwIfCommentsAreNotPermitted(Event event) {
-        if(!event.getPermitComments()){
+        if (!event.getPermitComments()) {
             throw new CommentsAreNotAllowedException(String.format("Comments are not allowed for this event. "
-            +"EventId = %d", event.getId()));
-        }
-    }
-
-    private void throwIfUserIdsPassedWithUserState(List<Long> userIds, UserState userState) {
-        if (userState != null && userIds != null && !userIds.isEmpty()) {
-            throw new RequestParametersMisusageException(String.format("Parameters userIds and "
-                    + "userState cannot be used together. UserIds = %s, userState = %s", userIds, userState));
+                    + "EventId = %d", event.getId()));
         }
     }
 
@@ -210,14 +214,21 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    private void throwIfSortIsCommentatorId(CommentSortType sort) {
+        if (CommentSortType.COMMENTATOR_ID.equals(sort)) {
+            throw new RequestParametersMisusageException("CommentSortType COMMENTATOR_ID is not allowed "
+                    + "for this search.");
+        }
+    }
+
     private CommentShortDto mapCommentToShortDto(Comment comment) {
         UserShortDto userShortDto = userMapper.userShortDtoFromUser(comment.getCommentator());
         return commentMapper.shortDtoFromComment(comment, userShortDto);
     }
 
     private CommentFullDto mapCommentToFullDto(Comment comment) {
-        EventShortDto eventDto  = eventService.mapEventShortDtoFromEvent(comment.getEvent());
-        UserDto commentatorDto = userMapper.userDtoFromUser(comment.getCommentator());
+        EventShortDto eventDto = eventService.mapEventShortDtoFromEvent(comment.getEvent());
+        UserShortDto commentatorDto = userMapper.userShortDtoFromUser(comment.getCommentator());
         return commentMapper.fullDtoFromComment(comment, eventDto, commentatorDto);
     }
 }

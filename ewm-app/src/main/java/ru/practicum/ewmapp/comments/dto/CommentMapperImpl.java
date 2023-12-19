@@ -6,7 +6,6 @@ import ru.practicum.ewmapp.comments.model.CommentState;
 import ru.practicum.ewmapp.comments.model.UserState;
 import ru.practicum.ewmapp.event.dto.EventShortDto;
 import ru.practicum.ewmapp.event.model.Event;
-import ru.practicum.ewmapp.user.dto.UserDto;
 import ru.practicum.ewmapp.user.dto.UserShortDto;
 import ru.practicum.ewmapp.user.model.User;
 
@@ -30,7 +29,7 @@ public class CommentMapperImpl implements CommentMapper {
     }
 
     @Override
-    public CommentFullDto fullDtoFromComment(Comment comment, EventShortDto eventShortDto, UserDto userDto) {
+    public CommentFullDto fullDtoFromComment(Comment comment, EventShortDto eventShortDto, UserShortDto userDto) {
         String text = CommentState.REMOVED_BY_USER.equals(comment.getCommentState())
                 ? "removed" : comment.getText();
         return new CommentFullDto(comment.getId(), comment.getCreatedOn(), eventShortDto,

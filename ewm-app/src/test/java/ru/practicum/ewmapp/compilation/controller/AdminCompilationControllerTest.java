@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcriteriaBuilderuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.ewmapp.compilation.dto.CompilationDto;
 import ru.practicum.ewmapp.compilation.dto.NewCompilationDto;
 import ru.practicum.ewmapp.compilation.service.CompilationService;
@@ -49,7 +49,7 @@ class AdminCompilationControllerTest {
                 null, null, null, null, null));
         dto = new CompilationDto(0L, events, "title", true);
 
-        mockMvc = MockMvcriteriaBuilderuilders
+        mockMvc = MockMvcBuilders
                 .standaloneSetup(adminCompilationController)
                 .setControllerAdvice(ExceptionControllerAdvice.class)
                 .build();

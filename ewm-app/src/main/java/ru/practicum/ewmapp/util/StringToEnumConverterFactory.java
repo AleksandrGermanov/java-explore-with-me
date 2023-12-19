@@ -2,9 +2,7 @@ package ru.practicum.ewmapp.util;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
-import org.springframework.stereotype.Component;
 
-@Component
 public class StringToEnumConverterFactory implements ConverterFactory<String, Enum> {
 
     @Override
@@ -14,7 +12,7 @@ public class StringToEnumConverterFactory implements ConverterFactory<String, En
     }
 
     private static class StringToEnumConverter<T extends Enum> implements Converter<String, T> {
-        private Class<T> enumType;
+        private final Class<T> enumType;
 
         public StringToEnumConverter(Class<T> enumType) {
             this.enumType = enumType;

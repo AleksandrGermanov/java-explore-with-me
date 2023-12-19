@@ -52,8 +52,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void throwIfUserNotExists(Long userId){
-        if(!userRepository.existsById(userId)){
+    @Transactional(readOnly = true)
+    public void throwIfUserNotExists(Long userId) {
+        if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(String.format("User with id = %d does not exist.", userId));
         }
     }

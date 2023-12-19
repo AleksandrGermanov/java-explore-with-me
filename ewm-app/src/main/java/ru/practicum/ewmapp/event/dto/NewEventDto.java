@@ -42,4 +42,19 @@ public class NewEventDto {
     @Size(min = 3, max = 120)
     private String title;
     private Boolean permitComments;
+
+    public NewEventDto(String annotation, Long category, String description,
+                       LocalDateTime eventDate, Location location, Boolean paid,
+                       int participantLimit, Boolean requestModeration,
+                       String title) {
+        this.annotation = annotation;
+        this.category = category;
+        this.description = description;
+        this.eventDate = eventDate;
+        this.location = location;
+        this.paid = paid;
+        this.participantLimit = participantLimit;
+        this.requestModeration = requestModeration;
+        this.title = title;
+    }
 }

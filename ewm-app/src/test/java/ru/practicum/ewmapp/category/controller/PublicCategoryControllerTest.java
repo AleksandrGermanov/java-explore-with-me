@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcriteriaBuilderuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
 import ru.practicum.ewmapp.category.service.CategoryService;
 import ru.practicum.ewmapp.exception.ExceptionControllerAdvice;
@@ -41,7 +41,7 @@ class PublicCategoryControllerTest {
     public void setup() {
         dto = new CategoryDto(0L, "name");
 
-        mockMvc = MockMvcriteriaBuilderuilders
+        mockMvc = MockMvcBuilders
                 .standaloneSetup(publicCategoryController)
                 .setControllerAdvice(ExceptionControllerAdvice.class)
                 .build();

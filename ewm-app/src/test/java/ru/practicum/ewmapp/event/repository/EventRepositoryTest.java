@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.ewmapp.category.model.Category;
 import ru.practicum.ewmapp.category.repository.CategoryRepository;
 import ru.practicum.ewmapp.event.model.Event;
@@ -25,14 +26,15 @@ import java.util.List;
 
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class EventRepositoryTest {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ParticipationRequestRepository requestRepository;
-    Event event1;
-    Event event2;
-    Event event3;
+    private Event event1;
+    private Event event2;
+    private Event event3;
 
     @BeforeEach
     @SneakyThrows
@@ -68,7 +70,7 @@ class EventRepositoryTest {
         event2 = new Event(null, "2".repeat(50), category2, Collections.emptyList(), createdOn2025,
                 "y".repeat(50), eventDate2025, user2, location2, false, 2,
                 publishedOn2025, false, EventState.PUBLISHED,
-                "title2", 0L, null, null,null, null);
+                "title2", 0L, null, null, null, null);
         event2.setState(EventState.CANCELED);
         event3 = new Event(null, "3".repeat(50), category3, Collections.emptyList(), createdOn2026,
                 "12".repeat(25), eventDate2026, user3, location3, false, 3,

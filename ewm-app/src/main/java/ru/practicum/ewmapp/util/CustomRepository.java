@@ -1,13 +1,10 @@
 package ru.practicum.ewmapp.util;
 
-import org.springframework.stereotype.Component;
-
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.util.List;
 
-@Component
 public class CustomRepository<T> {
     private final EntityManager entityManager;
     private final CriteriaBuilder criteriaBuilder;
@@ -21,6 +18,14 @@ public class CustomRepository<T> {
 
     public CustomQueryBuilder getBuilder() {
         return new CustomQueryBuilder();
+    }
+
+    public interface PredicateWriter<T> {
+        List<Predicate> writePredicates(CriteriaBuilder criteriaBuilder, Root<T> root);
+    }
+
+    public interface OrderWriter<T> {
+        Order writeOrder(CriteriaBuilder criteriaBuilder, Root<T> root);
     }
 
     public class CustomQueryBuilder {
@@ -58,14 +63,6 @@ public class CustomRepository<T> {
             }
             return this;
         }
-    }
-
-    public interface PredicateWriter<T> {
-        List<Predicate> writePredicates(CriteriaBuilder criteriaBuilder, Root<T> root);
-    }
-
-    public interface OrderWriter<T> {
-        Order writeOrder(CriteriaBuilder criteriaBuilder, Root<T> root);
     }
 }
 

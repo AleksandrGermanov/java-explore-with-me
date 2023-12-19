@@ -44,4 +44,6 @@ public interface EventService {
     Event findEventByIdOrThrow(Long eventId);
 
     EventShortDto mapEventShortDtoFromEvent(Event event);
+
+    void throwIfEventNotExists(Long eventId);
 }
