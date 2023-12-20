@@ -51,6 +51,14 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public void throwIfUserNotExists(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(String.format("User with id = %d does not exist.", userId));
+        }
+    }
+
     private List<UserDto> findAll(int from, int size) {
         PaginationInfo info = new PaginationInfo(from, size);
         return userRepository.findAll(info.asPageRequest()).stream()

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Where;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.ewmapp.category.model.Category;
+import ru.practicum.ewmapp.comments.model.Comment;
 import ru.practicum.ewmapp.compilation.model.CompilationEventRelation;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 import ru.practicum.ewmapp.user.model.User;
@@ -70,11 +71,14 @@ public class Event {
     private List<CompilationEventRelation> compilationRelations;
     @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
     private List<ParticipationRequest> requestsForEvent;
+    private Boolean permitComments;
+    @OneToMany(mappedBy = "event", fetch = FetchType.LAZY)
+    private List<Comment> comments;
 
     public Event(Long id, String annotation, Category category, LocalDateTime createdOn,
                  String description, LocalDateTime eventDate, User initiator,
                  Location location, Boolean paid, Integer participantLimit,
-                 Boolean requestModeration, EventState state, String title) {
+                 Boolean requestModeration, EventState state, String title, Boolean permitComments) {
         this.id = id;
         this.annotation = annotation;
         this.category = category;
@@ -88,5 +92,6 @@ public class Event {
         this.requestModeration = requestModeration;
         this.state = state;
         this.title = title;
+        this.permitComments = permitComments;
     }
 }

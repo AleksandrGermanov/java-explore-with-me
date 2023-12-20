@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.ewmapp.category.model.Category;
 import ru.practicum.ewmapp.category.repository.CategoryRepository;
 import ru.practicum.ewmapp.event.model.Event;
@@ -25,17 +26,17 @@ import java.util.List;
 
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class EventRepositoryTest {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final ParticipationRequestRepository requestRepository;
-    Event event1;
-    Event event2;
-    Event event3;
+    private Event event1;
+    private Event event2;
+    private Event event3;
 
     @BeforeEach
-    @SneakyThrows
     public void setup() {
         User user1 = new User(null, "user1", "1@ma.il");
         User user2 = new User(null, "user2", "2@ma.il");
@@ -63,17 +64,17 @@ class EventRepositoryTest {
         event1 = new Event(null, "1".repeat(50), category1, Collections.emptyList(), createdOn2024,
                 "x".repeat(50), eventDate2024, user1, location1, true, 1,
                 publishedOn2024, true, EventState.PUBLISHED,
-                "title1", 0L, null, null);
+                "title1", 0L, null, null, null, null);
         event1.setState(EventState.PUBLISHED);
         event2 = new Event(null, "2".repeat(50), category2, Collections.emptyList(), createdOn2025,
                 "y".repeat(50), eventDate2025, user2, location2, false, 2,
                 publishedOn2025, false, EventState.PUBLISHED,
-                "title2", 0L, null, null);
+                "title2", 0L, null, null, null, null);
         event2.setState(EventState.CANCELED);
         event3 = new Event(null, "3".repeat(50), category3, Collections.emptyList(), createdOn2026,
                 "12".repeat(25), eventDate2026, user3, location3, false, 3,
                 publishedOn2026, true, EventState.PENDING,
-                "title1", 0L, null, null);
+                "title1", 0L, null, null, null, null);
         event3.setState(EventState.PENDING);
         List.of(event1, event2, event3).forEach(e -> e = eventRepository.save(e));
 

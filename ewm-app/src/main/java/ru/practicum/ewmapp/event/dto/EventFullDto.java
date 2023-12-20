@@ -6,11 +6,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.commondtolib.JacksonLocalDateTimeSerializer;
 import ru.practicum.ewmapp.category.dto.CategoryDto;
+import ru.practicum.ewmapp.comments.dto.CommentShortDto;
 import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.model.Location;
 import ru.practicum.ewmapp.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,7 +28,7 @@ public class EventFullDto {
     @JsonSerialize(using = JacksonLocalDateTimeSerializer.class)
     private LocalDateTime eventDate;
     private UserShortDto initiator;
-    private Location location; // embedded
+    private Location location;
     private Boolean paid;
     private Integer participantLimit;
     @JsonSerialize(using = JacksonLocalDateTimeSerializer.class)
@@ -35,4 +37,6 @@ public class EventFullDto {
     private EventState state;
     private String title;
     private Long views;
+    private Boolean permitComments;
+    private List<CommentShortDto> comments;
 }

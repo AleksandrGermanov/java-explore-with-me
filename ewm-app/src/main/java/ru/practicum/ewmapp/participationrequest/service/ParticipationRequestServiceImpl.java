@@ -4,19 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewmapp.event.model.Event;
-import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.service.EventService;
-import ru.practicum.ewmapp.exception.mismatch.EventStateMismatchException;
-import ru.practicum.ewmapp.exception.mismatch.RequesterMismatchException;
 import ru.practicum.ewmapp.exception.notfound.RequestNotFoundException;
-import ru.practicum.ewmapp.exception.other.ParticipantLimitReachedException;
-import ru.practicum.ewmapp.exception.other.RequestAlreadyExistsException;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestDto;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestMapper;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequestStatus;
 import ru.practicum.ewmapp.participationrequest.repository.ParticipationRequestRepository;
 import ru.practicum.ewmapp.user.service.UserService;
+import ru.practicum.ewmapp.util.ThrowWhen;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -49,10 +45,11 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     public ParticipationRequestDto createRequest(Long requesterId, Long eventId) {
         Event event = eventService.findEventByIdOrThrow(eventId);
 
-        throwIfRequesterIsEventInitiator(event, requesterId);
-        throwIfRequestAlreadyExist(event, requesterId);
-        throwIfEventIsNotPublished(event);
-        throwIfParticipantLimitOfEventIsReached(event);
+        ThrowWhen.InParticipationRequestService.requesterIsEventInitiator(event, requesterId);
+        ThrowWhen.InParticipationRequestService.requestAlreadyExist(participationRequestRepository,
+                event, requesterId);
+        ThrowWhen.InParticipationRequestService.eventIsNotPublished(event);
+        ThrowWhen.InParticipationRequestService.participantLimitOfEventIsReached(event);
 
         ParticipationRequest request = formNewParticipationRequest(event, requesterId);
         return participationRequestMapper.dtoFromParticipationRequest(participationRequestRepository.save(request));
@@ -62,17 +59,11 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
     @Transactional
     public ParticipationRequestDto cancelRequest(Long userId, Long requestId) {
         ParticipationRequest request = findRequestByIdOrThrow(requestId);
-        throwIfUserIsNotRequester(request, userId);
+        ThrowWhen.InParticipationRequestService.userIsNotRequester(request, userId);
         request.setStatus(ParticipationRequestStatus.CANCELED);
         return participationRequestMapper.dtoFromParticipationRequest(participationRequestRepository.save(request));
     }
 
-    private void throwIfUserIsNotRequester(ParticipationRequest request, Long userId) {
-        if (!request.getRequester().getId().equals(userId)) {
-            throw new RequesterMismatchException(String.format("Request can be cancelled only by requester."
-                    + " Request id = %d,  user id = %d", request.getId(), userId));
-        }
-    }
 
     private ParticipationRequest findRequestByIdOrThrow(Long requestId) {
         return participationRequestRepository.findById(requestId).orElseThrow(() ->
@@ -89,34 +80,5 @@ public class ParticipationRequestServiceImpl implements ParticipationRequestServ
                 : ParticipationRequestStatus.PENDING;
         request.setStatus(status);
         return request;
-    }
-
-    private void throwIfParticipantLimitOfEventIsReached(Event event) {
-        if (event.getParticipantLimit() != 0 && event.getParticipantLimit().equals(event.getConfirmedRequests().size())) {
-            throw new ParticipantLimitReachedException(String.format("Participant limit for this event "
-                    + "has been reached. Event id = %d", event.getId()));
-        }
-    }
-
-    private void throwIfEventIsNotPublished(Event event) {
-        if (!event.getState().equals(EventState.PUBLISHED)) {
-            throw new EventStateMismatchException(String.format("Request can be created for published events only."
-                    + " Event id = %d", event.getId()));
-        }
-    }
-
-    private void throwIfRequestAlreadyExist(Event event, Long requesterId) {
-        if (participationRequestRepository.findByEventAndRequesterId(event, requesterId).isPresent()) {
-            throw new RequestAlreadyExistsException(String.format("Request for this event " +
-                            "has already been created by the user. Event id = %d, user id = %d.",
-                    event.getId(), requesterId));
-        }
-    }
-
-    private void throwIfRequesterIsEventInitiator(Event event, Long requesterId) {
-        if (event.getInitiator().getId().equals(requesterId)) {
-            throw new RequesterMismatchException(String.format("Requester and event initiator have the same id."
-                    + "Event id= %d, requester id = %d.", event.getId(), requesterId));
-        }
     }
 }

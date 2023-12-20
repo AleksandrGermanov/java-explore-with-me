@@ -43,7 +43,7 @@ class PublicCompilationControllerTest {
     public void setup() {
         events = List.of(new EventShortDto(0L,
                 null, null, null, null,
-                null, null, null, null));
+                null, null, null, null, null));
         dto = new CompilationDto(0L, events, "title", true);
 
         mockMvc = MockMvcBuilders

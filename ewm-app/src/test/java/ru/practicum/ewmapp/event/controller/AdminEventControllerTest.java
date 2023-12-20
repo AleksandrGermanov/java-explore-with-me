@@ -55,7 +55,7 @@ class AdminEventControllerTest {
         LocalDateTime eventDate = LocalDateTime.of(2025, 2, 2, 2, 2, 2);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L);
+                "title", 0L, null, null);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(adminEventController)

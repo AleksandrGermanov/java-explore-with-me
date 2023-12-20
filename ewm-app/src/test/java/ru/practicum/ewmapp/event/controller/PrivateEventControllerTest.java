@@ -61,12 +61,12 @@ class PrivateEventControllerTest {
         LocalDateTime eventDate = LocalDateTime.of(2025, 2, 2, 2, 2, 2);
         newEventDto = new NewEventDto("annotation".repeat(10), 0L,
                 "description".repeat(10), eventDate, location, true, 1, true,
-                "title");
+                "title", null);
         eventShortDto = new EventShortDto(0L, "annotation", categoryDto, 0L,
-                eventDate, userShortDto, true, "title", 0L);
+                eventDate, userShortDto, true, "title", 0L, null);
         eventFullDto = new EventFullDto(0L, "annotation", categoryDto, 0L, createdOn,
                 "description", eventDate, userShortDto, location, true, 1, publishedOn, true, EventState.PENDING,
-                "title", 0L);
+                "title", 0L, null, null);
 
         mockMvc = MockMvcBuilders
                 .standaloneSetup(privateEventController)
