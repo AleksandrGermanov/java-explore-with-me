@@ -19,10 +19,9 @@ import ru.practicum.ewmapp.event.model.Event;
 import ru.practicum.ewmapp.event.model.EventState;
 import ru.practicum.ewmapp.event.moderation.*;
 import ru.practicum.ewmapp.event.repository.EventRepository;
-import ru.practicum.ewmapp.exception.mismatch.*;
+import ru.practicum.ewmapp.exception.mismatch.EventDateMismatchException;
+import ru.practicum.ewmapp.exception.mismatch.EventStateMismatchException;
 import ru.practicum.ewmapp.exception.notfound.EventNotFoundException;
-import ru.practicum.ewmapp.exception.other.ModerationNotRequiredException;
-import ru.practicum.ewmapp.exception.other.StartIsAfterEndException;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestDto;
 import ru.practicum.ewmapp.participationrequest.dto.ParticipationRequestMapper;
 import ru.practicum.ewmapp.participationrequest.model.ParticipationRequest;
@@ -35,10 +34,14 @@ import ru.practicum.ewmapp.user.dto.UserShortDto;
 import ru.practicum.ewmapp.user.model.User;
 import ru.practicum.ewmapp.user.service.UserService;
 import ru.practicum.ewmapp.util.PaginationInfo;
+import ru.practicum.ewmapp.util.ThrowWhen;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,7 +82,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public EventFullDto findByUserAndById(Long userId, Long eventId) {
         Event event = findEventByIdOrThrow(eventId);
-        throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
+        ThrowWhen.InEventService.eventInitiatorIdAndUserIdDiffer(event, userId);
         setViewsForEvent(event);
         return mapEventFullDtoFromEvent(event);
     }
@@ -88,7 +91,7 @@ public class EventServiceImpl implements EventService {
     @Transactional
     public EventFullDto updateEventByUserRequest(Long userId, Long eventId, UpdateEventUserRequest request) {
         Event event = findEventByIdOrThrow(eventId);
-        throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
+        ThrowWhen.InEventService.eventInitiatorIdAndUserIdDiffer(event, userId);
         mergeUserRequestIntoEvent(request, event);
         return mapEventFullDtoFromEvent(setViewsForEvent(eventRepository.save(event)));
     }
@@ -97,7 +100,7 @@ public class EventServiceImpl implements EventService {
     @Transactional(readOnly = true)
     public List<ParticipationRequestDto> findAllRequestsForEvent(Long userId, Long eventId) {
         Event event = findEventByIdOrThrow(eventId);
-        throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
+        ThrowWhen.InEventService.eventInitiatorIdAndUserIdDiffer(event, userId);
         return event.getRequestsForEvent().stream()
                 .map(participationRequestMapper::dtoFromParticipationRequest)
                 .collect(Collectors.toList());
@@ -109,13 +112,13 @@ public class EventServiceImpl implements EventService {
                                                                        Long eventId,
                                                                        EventRequestStatusUpdateRequest updateRequest) {
         Event event = findEventByIdOrThrow(eventId);
-        throwIfEventInitiatorIdAndUserIdDiffer(event, userId);
-        throwIfEventRequestNotRequiresModeration(event);
+        ThrowWhen.InEventService.eventInitiatorIdAndUserIdDiffer(event, userId);
+        ThrowWhen.InEventService.eventRequestNotRequiresModeration(event);
         List<ParticipationRequest> pendingRequests = event.getRequestsForEvent().stream()
                 .filter(r -> r.getStatus().equals(ParticipationRequestStatus.PENDING))
                 .collect(Collectors.toList());
 
-        throwIfRequestStatusIsNotPendingForStatusUpdate(updateRequest, pendingRequests);
+        ThrowWhen.InEventService.requestStatusIsNotPendingForStatusUpdate(updateRequest, pendingRequests);
         if (updateRequest.getStatus().equals(ParticipationRequestStatus.CONFIRMED)) {
             return confirmAndUpdateRequests(updateRequest, event, pendingRequests, participationRequestRepository);
         }
@@ -128,7 +131,7 @@ public class EventServiceImpl implements EventService {
                                                     LocalDateTime rangeStart, LocalDateTime rangeEnd, Boolean onlyAvailable,
                                                     PublicEventSortType sort, Integer from, Integer size,
                                                     String uri, String remoteIp) {
-        throwIfStartIsAfterEnd(rangeStart, rangeEnd);
+        ThrowWhen.InEventService.startIsAfterEnd(rangeStart, rangeEnd);
         List<Event> events = eventRepository.findAllEventsForUser(text, categoryIds, paid,
                 rangeStart, rangeEnd, onlyAvailable,
                 sort, from, size);
@@ -193,7 +196,7 @@ public class EventServiceImpl implements EventService {
                                                     LocalDateTime rangeEnd,
                                                     Integer from,
                                                     Integer size) {
-        throwIfStartIsAfterEnd(rangeStart, rangeEnd);
+        ThrowWhen.InEventService.startIsAfterEnd(rangeStart, rangeEnd);
         return eventRepository.findAllEventsForAdmin(userIds, states, rangeStart,
                         rangeEnd, from, size).stream()
                 .map(this::setViewsForEvent)
@@ -258,7 +261,7 @@ public class EventServiceImpl implements EventService {
             ParticipationRequestRepository participationRequestRepository) {
         int capacityDifference = countCapacityDifference(updateRequest, event);
         if (capacityDifference < 0) {
-            throwCapacityIsNotEnough(updateRequest, event);
+            ThrowWhen.InEventService.requestCapacityIsNotEnough(updateRequest, event);
         }
         if (capacityDifference == 0) {
             return performCapacityIsZeroResultAction(pendingRequests,
@@ -315,55 +318,11 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
-    private void throwCapacityIsNotEnough(EventRequestStatusUpdateRequest updateRequest, Event event) {
-        throw new EventRemainingCapacityMismatchException(String.format("Not enough "
-                        + "capacity left for confirming all requests. EventId = %d, ParticipationLimit = %d, "
-                        + "ConfirmedRequestsSize = %d, RequestIdsSize = %d", event.getId(),
-                event.getParticipantLimit(), event.getConfirmedRequests().size(),
-                updateRequest.getRequestIds().size()));
-    }
-
     private int countCapacityDifference(EventRequestStatusUpdateRequest updateRequest, Event event) {
         int remainingCapacity = event.getParticipantLimit() - event.getConfirmedRequests().size();
         return remainingCapacity - updateRequest.getRequestIds().size();
     }
 
-    private void throwIfEventRequestNotRequiresModeration(Event event) {
-        if (event.getRequestModeration().equals(false) || event.getParticipantLimit() == 0) {
-            throw new ModerationNotRequiredException(
-                    String.format("For this event moderation is not required. EventId = %d", event.getId())
-            );
-        }
-    }
-
-    private void throwIfStartIsAfterEnd(LocalDateTime rangeStart, LocalDateTime rangeEnd) {
-        if (rangeStart != null && rangeEnd != null && rangeStart.isAfter(rangeEnd)) {
-            throw new StartIsAfterEndException(String.format("RangeStart cannot be after rangeEnd. "
-                    + "RangeStart = %s, rangeEnd = %s.", rangeStart, rangeEnd));
-        }
-    }
-
-    private void throwIfEventInitiatorIdAndUserIdDiffer(Event event, Long userId) {
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new InitiatorMismatchException(String.format("Requested event has another initiator." +
-                    " EventId = %d, userId = %d", event.getId(), userId));
-        }
-    }
-
-    private void throwIfRequestStatusIsNotPendingForStatusUpdate(EventRequestStatusUpdateRequest updateRequest,
-                                                                 List<ParticipationRequest> pendingRequests) {
-        Set<Long> pendingRequestsIds = pendingRequests.stream()
-                .map(ParticipationRequest::getId)
-                .collect(Collectors.toSet());
-        updateRequest.getRequestIds()
-                .forEach(id -> {
-                    if (!pendingRequestsIds.contains(id)) {
-                        throw new RequestIdMismatchException(String.format("Status can be changed only for"
-                                + " requests with PENDING status. Request with id = %d may be with "
-                                + "the other status.", id));
-                    }
-                });
-    }
 
     private EventFullDto mapEventFullDtoFromEvent(Event event) {
         CategoryDto categoryDto = categoryMapper.categoryDtoFromCategory(event.getCategory());

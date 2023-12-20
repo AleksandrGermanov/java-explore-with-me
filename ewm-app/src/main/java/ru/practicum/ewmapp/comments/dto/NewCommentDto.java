@@ -17,5 +17,5 @@ public class NewCommentDto {
     @NotNull
     @NotBlank
     @Size(min = 2, max = 2000)
-    String text;
+    private String text;
 }

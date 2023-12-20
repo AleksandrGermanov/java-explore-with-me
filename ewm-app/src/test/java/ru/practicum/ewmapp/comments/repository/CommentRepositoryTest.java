@@ -1,7 +1,6 @@
 package ru.practicum.ewmapp.comments.repository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,6 @@ class CommentRepositoryTest {
 
 
     @BeforeEach
-    @SneakyThrows
     public void setup() {
         User user1 = new User(null, "user1", "1@ma.il");
         User user2 = new User(null, "user2", "2@ma.il");

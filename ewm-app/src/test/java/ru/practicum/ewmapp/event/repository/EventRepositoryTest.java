@@ -37,7 +37,6 @@ class EventRepositoryTest {
     private Event event3;
 
     @BeforeEach
-    @SneakyThrows
     public void setup() {
         User user1 = new User(null, "user1", "1@ma.il");
         User user2 = new User(null, "user2", "2@ma.il");

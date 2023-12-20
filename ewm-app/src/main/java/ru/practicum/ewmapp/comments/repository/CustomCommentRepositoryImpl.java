@@ -35,7 +35,6 @@ public class CustomCommentRepositoryImpl extends CustomRepository<Comment> imple
     @Override
     public List<Comment> findAllCommentsForUser(Long userId, Long eventId, CommentState commentState,
                                                 CommentSortType sort, Integer from, Integer size) {
-
         return getBuilder()
                 .setPredicates((criteriaBuilder, commentRoot) -> predicatesForUser(criteriaBuilder,
                         commentRoot, userId, eventId, commentState))
