@@ -8,6 +8,7 @@
 ---
 
 ## Цель
+
 Разработка многомодульного web-приложения в рамках подготовленной спецификации OpenAPI 3.0/Swagger,
 разработка собственной функциональности с использованием SpringBoot, SpringData (JPA), J-unit,
 Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
