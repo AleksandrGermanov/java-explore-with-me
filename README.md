@@ -44,7 +44,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > настроена работа ObjectMapper'а : дата сериализуется с помощью кастомного маппера,
 > сериализируются только ненулевые поля.
 > - В [тестовых классах модуля общих DTO](/statistics/common-dto-lib/src/test/java/ru/practicum/commondtolib) получилось использовать тестовое окружение
-> при помощи пустого конфигурационного класса (в модуле нет класса с main-методом, контекс автоматически не создается),
+> при помощи пустого конфигурационного класса (в модуле нет класса с main-методом, контекст автоматически не создается),
 > а в самих тестах использованы методы библиотеки assertj.
 > - В классе [StatsViewRepositoryImpl](/statistics/server/src/main/java/ru/practicum/statisticsserver/endpointhit/repository/StatsViewRepositoryImpl.java)
 > представлен пример парсинга объекта типа Tuple в объект StatsView, который не является JPA-сущностью. 
