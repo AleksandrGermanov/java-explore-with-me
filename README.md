@@ -12,7 +12,9 @@
 Разработка многомодульного web-приложения в рамках подготовленной спецификации OpenAPI 3.0/Swagger,
 разработка собственной функциональности с использованием SpringBoot, SpringData (JPA), J-unit,
 Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
+
 ---
+
 ### 1-й этап: Сервис статистики
 
 #### Задачи
@@ -29,7 +31,40 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
  - **разработка собственно [сервера статистики](/statistics/server)**
  - **обособление общих DTO в отдельный [модуль](/statistics/common-dto-lib)**
  - **написание [клиента](/statistics/client) с целью последующей интеграции в основной сервис**
+ - **unit-тестирование**
+ - **postman-тестирование с использованием подготовленной коллекции**
+ - **деплой с помощью docker-compose**
 
+> [!TIP]
+> Это интересно! (Highlights!)
+> - В классе EndpointHitClientImpl в методе [retrieveStatsViewList](https://github.com/AleksandrGermanov/java-explore-with-me/blob/b70d38969fe2dfb4fc308655a9d18e1233ef0169/statistics/client/src/main/java/ru/practicum/endpointhitclient/EndpointHitClientImpl.java#L63)
+> реализовано добавление опционального query-параметра(List<String> uris) и возврашение параметризованного типа 
+> с помощью RestTemplate
+> - В классе [EndpointHitDto](/statistics/common-dto-lib/src/main/java/ru/practicum/commondtolib/EndpointHitDto.java) 
+> настроена работа ObjectMapper'а : дата сериализуется с помощью кастомного маппера,
+> сериализируются только ненулевые поля.
+> - В [тестовых классах модуля общих DTO](/statistics/common-dto-lib/src/test/java/ru/practicum/commondtolib) получилось использовать тестовое окружение
+> при помощи пустого конфигурационного класса (в модуле нет класса с main-методом, контекс автоматически не создается),
+> а в самих тестах использованы методы библиотеки assertj.
+> - В классе [StatsViewRepositoryImpl](/statistics/server/src/main/java/ru/practicum/statisticsserver/endpointhit/repository/StatsViewRepositoryImpl.java)
+> представлен пример парсинга объекта типа Tuple в объект StatsView, который не является JPA-сущностью. 
+> Метод получения объекта альтернативен JPQL `select new...`.
+
+---
+
+### 2-й этап: Сервис статистики
+
+#### Задачи
+
+#### Разработка основного сервиса по предоставленной [спецификации](/ewm-main-service-spec.json) с использованием [Swagger Editor](https://editor.swagger.io)
+- **разработка собственно [основного сервиса](/ewm-app)** 
+- **интеграция [клиента](/statistics/client) сервиса статистики, с помощью 
+[конфигурационного класса](/ewm-app/src/main/java/ru/practicum/ewmapp/EndpointHitClientInjector.java)**
+- **unit-тестирование**
+- **postman-тестирование с использованием подготовленной коллекции**
+- **деплой с помощью docker-compose**
+
+---
 
 ### Задачи третьего этапа проектной работы _(реализация собственной функциональности)_
 
