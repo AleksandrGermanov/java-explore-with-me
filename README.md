@@ -76,7 +76,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
     есть пример [StringToEnumConverterFactory](/ewm-app/src/main/java/ru/practicum/ewmapp/util/StringToEnumConverterFactory.java).
     Код взят [отсюда](https://www.baeldung.com/spring-type-conversions "https://www.baeldung.com/spring-type-conversions") с небольшим, но важным исправлением,
-    которое делает  сгенерированные конертеры нечувствительными к регистру.
+    которое делает  сгенерированные конвертеры нечувствительными к регистру.
 > - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
     находится класс-аггрегатор [ThrowWhen](/ewm-app/src/main/java/ru/practicum/ewmapp/util/ThrowWhen.java).
     Пришлось пожертвовать конвенциональным названием класса в угоду читаемости кода.
