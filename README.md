@@ -17,66 +17,83 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 
 ### 1-й этап: Сервис статистики
 
-#### Задачи
-
->[!NOTE]
+> [!NOTE]
 >#### Формат:
->
-> > #### Задача
-> > - **подзадача** : _(опционально)_ комментарии
+> > - **Задача**
+> > - - **подзадача** : _(опционально)_ комментарии
 
 #### Разработка сервиса статистики по предоставленной [спецификации](/ewm-stats-service-spec.json) с использованием [Swagger Editor](https://editor.swagger.io)
- - **создание многомодульной структуры проекта**
- - **настройка `pom.xml` для родительского и дочерних модулей**
- - **разработка собственно [сервера статистики](/statistics/server)**
- - **обособление общих DTO в отдельный [модуль](/statistics/common-dto-lib)**
- - **написание [клиента](/statistics/client) с целью последующей интеграции в основной сервис**
- - **unit-тестирование**
- - **postman-тестирование с использованием подготовленной коллекции**
- - **деплой с помощью docker-compose**
+
+- **создание многомодульной структуры проекта**
+- **настройка `pom.xml` для родительского и дочерних модулей**
+- **разработка собственно [сервера статистики](/statistics/server)**
+- **обособление общих DTO в отдельный [модуль](/statistics/common-dto-lib)**
+- **написание [клиента](/statistics/client) с целью последующей интеграции в основной сервис**
+- **unit-тестирование**
+- **postman-тестирование с использованием подготовленной коллекции**
+- **деплой с помощью docker-compose**
 
 > [!TIP]
-> Это интересно! (Highlights!)
-> - В классе EndpointHitClientImpl в методе [retrieveStatsViewList](https://github.com/AleksandrGermanov/java-explore-with-me/blob/b70d38969fe2dfb4fc308655a9d18e1233ef0169/statistics/client/src/main/java/ru/practicum/endpointhitclient/EndpointHitClientImpl.java#L63)
-> реализовано добавление опционального query-параметра(List<String> uris) и возврашение параметризованного типа 
-> с помощью RestTemplate
-> - В классе [EndpointHitDto](/statistics/common-dto-lib/src/main/java/ru/practicum/commondtolib/EndpointHitDto.java) 
-> настроена работа ObjectMapper'а : дата сериализуется с помощью кастомного маппера,
-> сериализируются только ненулевые поля.
-> - В [тестовых классах модуля общих DTO](/statistics/common-dto-lib/src/test/java/ru/practicum/commondtolib) получилось использовать тестовое окружение
-> при помощи пустого конфигурационного класса (в модуле нет класса с main-методом, контекст автоматически не создается),
-> а в самих тестах использованы методы библиотеки assertj.
-> - В классе [StatsViewRepositoryImpl](/statistics/server/src/main/java/ru/practicum/statisticsserver/endpointhit/repository/StatsViewRepositoryImpl.java)
-> представлен пример парсинга объекта типа Tuple в объект StatsView, который не является JPA-сущностью. 
-> Метод получения объекта альтернативен JPQL `select new...`.
+> Highlights!
+> - В классе EndpointHitClientImpl в
+    методе [retrieveStatsViewList](https://github.com/AleksandrGermanov/java-explore-with-me/blob/b70d38969fe2dfb4fc308655a9d18e1233ef0169/statistics/client/src/main/java/ru/practicum/endpointhitclient/EndpointHitClientImpl.java#L63)
+    реализовано добавление опционального query-параметра(List<String> uris) и возврашение параметризованного типа
+    с помощью RestTemplate
+> - В классе [EndpointHitDto](/statistics/common-dto-lib/src/main/java/ru/practicum/commondtolib/EndpointHitDto.java)
+    настроена работа ObjectMapper'а : дата сериализуется с помощью кастомного маппера,
+    сериализируются только ненулевые поля.
+> - В [тестовых классах модуля общих DTO](/statistics/common-dto-lib/src/test/java/ru/practicum/commondtolib)
+    получилось использовать тестовые билиотеки, поставляемые в спринговском стартере,
+    при помощи пустого конфигурационного класса (в модуле нет класса с main-методом, контекст автоматически не
+    создается),
+    а в самих тестах использованы методы библиотеки assertj.
+> - В классе
+    [StatsViewRepositoryImpl](/statistics/server/src/main/java/ru/practicum/statisticsserver/endpointhit/repository/StatsViewRepositoryImpl.java)
+    представлен пример парсинга объекта типа Tuple в объект StatsView, который не является JPA-сущностью.
+    Метод получения объекта альтернативен JPQL `select new...`.
 
 ---
 
 ### 2-й этап: Сервис статистики
 
-#### Задачи
-
 #### Разработка основного сервиса по предоставленной [спецификации](/ewm-main-service-spec.json) с использованием [Swagger Editor](https://editor.swagger.io)
-- **разработка собственно [основного сервиса](/ewm-app)** 
-- **интеграция [клиента](/statistics/client) сервиса статистики, с помощью 
-[конфигурационного класса](/ewm-app/src/main/java/ru/practicum/ewmapp/EndpointHitClientInjector.java)**
+
+- **разработка собственно [основного сервиса](/ewm-app)**
+- **интеграция [клиента](/statistics/client) сервиса статистики, с помощью
+  [конфигурационного класса](/ewm-app/src/main/java/ru/practicum/ewmapp/EndpointHitClientInjector.java)**
 - **unit-тестирование**
 - **postman-тестирование с использованием подготовленной коллекции**
 - **деплой с помощью docker-compose**
 
+> [!TIP]
+> Highlights!
+> - В классе [Event](/ewm-app/src/main/java/ru/practicum/ewmapp/event/model/Event.java)
+    представлен пример сложного ORM: `@Embedded, @Where, @OneToMany, @ManyToOne, @Enumerated, @Transient и др.`
+> - В пакете [compilation](/ewm-app/src/main/java/ru/practicum/ewmapp/compilation)
+    есть пример ORM c приером реализации связи many-to-many через переходную таблицу - сущность с комплексным
+    первичным ключом 
+    (см. [CompilationEventRelation.java](/ewm-app/src/main/java/ru/practicum/ewmapp/compilation/model/CompilationEventRelation.java)).
+> - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
+    есть пример [StringToEnumConverterFactory](/ewm-app/src/main/java/ru/practicum/ewmapp/util/StringToEnumConverterFactory.java).
+    Код взят [отсюда](https://www.baeldung.com/spring-type-conversions "https://www.baeldung.com/spring-type-conversions") с небольшим, но важным исправлением,
+    которое делает  сгенерированные конертеры нечувствительными к регистру.
+> - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
+    находится класс-аггрегатор [ThrowWhen](/ewm-app/src/main/java/ru/practicum/ewmapp/util/ThrowWhen.java).
+    Пришлось пожертвовать конвенциональным названием класса в угоду читаемости кода.
 ---
 
-### Задачи третьего этапа проектной работы _(реализация собственной функциональности)_
 
+### 3-й этап : реализация собственной функциональности
 
+#### Реализация возможности комментировать события
 
-#### Добавить ось изменений для работы с комментариями
+- **Добавить ось изменений для работы с комментариями**
 
-- **создать таблицу в бд** : `name = comments`
-- **создать модель**
-- **создать ДТО и мапперы**
-- **создать репозиторий**
-- **создать сервис**
+- - **создать таблицу в бд** : `name = comments`
+- - **создать модель**
+- - **создать ДТО и мапперы**
+- - **создать репозиторий**
+- - **создать сервис**
 
 #### Добавить связь с другими сущностями
 
@@ -92,7 +109,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 
 #### Декларировать возможность создания комментариев для пользователей
 
-- **добавить в `PrivateEventController` маппинг `(CommentShortDto) POST /users/{userId}/events/{eventId}/comments`** : 
+- **добавить в `PrivateEventController` маппинг `(CommentShortDto) POST /users/{userId}/events/{eventId}/comments`** :
   принимает `NewCommentDto`, устанавливает `CommentState = POSTED`,
   `UserState[APP_USER, REQUESTER, INITIATOR]` получается автоматически в сервисе
 
@@ -106,7 +123,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
   получение конкретного комментария.
   <br><br>
 
-- **добавить в `PrivateEventController` маппинг `(List<CommentShortDto>) 
+- **добавить в `PrivateEventController` маппинг `(List<CommentShortDto>)
   GET /users/{userId}/events/{eventId}/comments?userState={userState}
   &commentState={commentState}&sort={sort}&from={from}&size={size}`** :
   получение всех комментариев для события с возможностью фильтрации,
@@ -125,14 +142,18 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 #### Декларировать возможность изменения комментариев для пользователей, администраторов
 
 - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commentId}`** : `CommentState = UPDATED`,
-  принимает `NewCommentDto`, проверка userId = commentatorId, комментарии со статусом `MODERATED` редактировать запрещено(код 409).
+  принимает `NewCommentDto`, проверка userId = commentatorId, комментарии со статусом `MODERATED` редактировать
+  запрещено(код 409).
 - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/remove?event={eventId}`** :
-  `CommentState = DELETED_BY_USER`,  проверка userId = commentatorId, при маппинге `Comment` в DTO в поле `text` передавать `"removed"`
+  `CommentState = DELETED_BY_USER`, проверка userId = commentatorId, при маппинге `Comment` в DTO в поле `text`
+  передавать `"removed"`
 - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/restore?event={eventId}`** :
-  только для комментариев с `CommentState = DELETED_BY_USER`,  проверка userId = commentatorId, новый `CommentState = UPDATED`
+  только для комментариев с `CommentState = DELETED_BY_USER`, проверка userId = commentatorId,
+  новый `CommentState = UPDATED`
   <br><br>
 
-- **Добавить маппинг `PATCH /admin/comments/{commentId}/moderate`** : `CommentState = MODERATED`, принимает `NewCommentDto`
+- **Добавить маппинг `PATCH /admin/comments/{commentId}/moderate`** : `CommentState = MODERATED`,
+  принимает `NewCommentDto`
 
 #### Декларировать возможность удаления комментариев для администраторов
 
@@ -146,10 +167,11 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 
 - **Имплементировать методы сервиса, репозиториев**
 - **Обработать ошибки** :
+
 > Имя ошибки (код) <- сценарий возниконовения.<br>
 > - CommentatorMismatchException (409) <- когда id пользователя не совпадает с id комментатора.<br>
-> - RequestParametersMisusageException (400) <- неправильное использоване параметров запроса 
-  (сортировка COMMENTATOR_ID, когда производится поиск комментариев пользователя).<br>
+> - RequestParametersMisusageException (400) <- неправильное использоване параметров запроса
+    (сортировка COMMENTATOR_ID, когда производится поиск комментариев пользователя).<br>
 > - CommentStateMismatchException (409) <- несовпадение статуса комментария для требуемой операции.<br>
 > - CommentNotFoundException (404)<- запрашиваемый комментарий не найден в БД.<br>
 > - CommentsAreNotAllowedException (409) <- комментарии не разрешены для размещения для данного события.

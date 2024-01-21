@@ -167,7 +167,7 @@ public class EventServiceImpl implements EventService {
         mergeRequestCommonPartIntoEvent(event, adminRequest);
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new EventDateMismatchException(String.format("Event update time requirement is not met." +
-                            "EventDate has to be 1 hours or more from now. Event id = %d, eventDate = %s",
+                            "EventDate has to be 1 hour or more from now. Event id = %d, eventDate = %s",
                     event.getId(),
                     event.getEventDate().format(formatter)));
         }
