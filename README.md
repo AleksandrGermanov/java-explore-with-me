@@ -70,7 +70,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - В классе [Event](/ewm-app/src/main/java/ru/practicum/ewmapp/event/model/Event.java)
     представлен пример сложного ORM: `@Embedded, @Where, @OneToMany, @ManyToOne, @Enumerated, @Transient и др.`
 > - В пакете [compilation](/ewm-app/src/main/java/ru/practicum/ewmapp/compilation)
-    есть пример ORM c приером реализации связи many-to-many через переходную таблицу - сущность с комплексным
+    есть пример ORM c реализацией связи many-to-many через переходную таблицу - сущность с комплексным
     первичным ключом 
     (см. [CompilationEventRelation.java](/ewm-app/src/main/java/ru/practicum/ewmapp/compilation/model/CompilationEventRelation.java)).
 > - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
@@ -80,39 +80,39 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
     находится класс-аггрегатор [ThrowWhen](/ewm-app/src/main/java/ru/practicum/ewmapp/util/ThrowWhen.java).
     Пришлось пожертвовать конвенциональным названием класса в угоду читаемости кода.
----
 
+---
 
 ### 3-й этап : реализация собственной функциональности
 
 #### Реализация возможности комментировать события
 
 - **Добавить ось изменений для работы с комментариями**
-
 - - **создать таблицу в бд** : `name = comments`
 - - **создать модель**
 - - **создать ДТО и мапперы**
 - - **создать репозиторий**
 - - **создать сервис**
-
-#### Добавить связь с другими сущностями
-
-- **создать коллекцию в `User`**
-- **создать коллекцию в `Event`**
-- **добавить флаг `permitComments` в `Event` и в БД**
--
-- **добавить флаг `permitComments (default = true)` в `NewEventDto`**
-- **добавить коллекцию `comments (СommentShortDto)` в `EventFullDto`**, сортировка `created_on_DESC`
-- **добавить флаг `permitComments` в `EventFullDto`**
-- **добавить поле `сomments (Long)` в `EventShortDto`**
-- **поправить создание и маппинг измененных объектов**
-
+    <br>
+    <br>
+- **Добавить связь с другими сущностями**
+- - **создать коллекцию в `User`**
+- - **создать коллекцию в `Event`**
+- - **добавить флаг `permitComments` в `Event` и в БД**
+- - **добавить флаг `permitComments (default = true)` в `NewEventDto`**
+- - **добавить коллекцию `comments (СommentShortDto)` в `EventFullDto`**, сортировка `created_on_DESC`
+- - **добавить флаг `permitComments` в `EventFullDto`**
+- - **добавить поле `сomments (Long)` в `EventShortDto`**
+- - **поправить создание и маппинг измененных объектов**
+    <br>
+    <br>
 #### Декларировать возможность создания комментариев для пользователей
 
 - **добавить в `PrivateEventController` маппинг `(CommentShortDto) POST /users/{userId}/events/{eventId}/comments`** :
   принимает `NewCommentDto`, устанавливает `CommentState = POSTED`,
   `UserState[APP_USER, REQUESTER, INITIATOR]` получается автоматически в сервисе
-
+  <br>
+  <br>
 #### Декларировать возможность получения комментариев для пользователей, администраторов
 
 - **создать `PrivateCommentController`**
@@ -138,7 +138,8 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
   `sort = CREATED_ASC, (default)CREATED_DESC, COMMENTATOR_ID`.
 - **Добавить маппинг `(CommentFullDto) GET /admin/comments/{commentId}`** :
   получение конкретного комментария.
-
+  <br>
+  <br>
 #### Декларировать возможность изменения комментариев для пользователей, администраторов
 
 - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commentId}`** : `CommentState = UPDATED`,
@@ -150,19 +151,20 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/restore?event={eventId}`** :
   только для комментариев с `CommentState = DELETED_BY_USER`, проверка userId = commentatorId,
   новый `CommentState = UPDATED`
-  <br><br>
-
 - **Добавить маппинг `PATCH /admin/comments/{commentId}/moderate`** : `CommentState = MODERATED`,
   принимает `NewCommentDto`
-
+  <br>
+  <br>
 #### Декларировать возможность удаления комментариев для администраторов
 
 - **Добавить маппинг `DELETE /admin/comments/{commentId}`**
-
+  <br>
+  <br>
 #### Декларировать возможность сортировки подбоки событий по наиболее обсуждаемым
 
 - **Добавить `PublicSortType = MOST_DISCUSSED`**
-
+  <br>
+  <br>
 #### Реализовать заявленную функциональность
 
 - **Имплементировать методы сервиса, репозиториев**
@@ -176,6 +178,8 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - CommentNotFoundException (404)<- запрашиваемый комментарий не найден в БД.<br>
 > - CommentsAreNotAllowedException (409) <- комментарии не разрешены для размещения для данного события.
 
+  <br>
+  <br>
 #### Тестирование
 
 - **Юнит-тестирование**
