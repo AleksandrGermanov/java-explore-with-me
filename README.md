@@ -1,8 +1,5 @@
 # java-explore-with-me
 
-> [!WARNING]
-> Файл `readme.md` находится в процессе редактирования.
-
 ## Сервис для объявления и посещения мероприятий. Дипломный проект курса "Java-разработчик" на платформе Яндекс-Практикум.
 
 ---
@@ -85,6 +82,9 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 
 ### 3-й этап : реализация собственной функциональности
 
+>[NOTE!]
+> Задачи 3-го этапа расписаны более подробно, т.к. это по сути дорожная карта, по которой и был написан 3й этап.
+
 #### Реализация возможности комментировать события
 
 - **Добавить ось изменений для работы с комментариями**
@@ -106,69 +106,66 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 - - **поправить создание и маппинг измененных объектов**
     <br>
     <br>
-#### Декларировать возможность создания комментариев для пользователей
+- **Декларировать возможность создания комментариев для пользователей**
 
-- **добавить в `PrivateEventController` маппинг `(CommentShortDto) POST /users/{userId}/events/{eventId}/comments`** :
+- - **добавить в `PrivateEventController` маппинг `(CommentShortDto) POST /users/{userId}/events/{eventId}/comments`** :
   принимает `NewCommentDto`, устанавливает `CommentState = POSTED`,
   `UserState[APP_USER, REQUESTER, INITIATOR]` получается автоматически в сервисе
   <br>
   <br>
-#### Декларировать возможность получения комментариев для пользователей, администраторов
+- **Декларировать возможность получения комментариев для пользователей, администраторов**
 
-- **создать `PrivateCommentController`**
-- **Добавить маппинг `(List<CommentShortDto> - возвращаемое значение)
+- - **создать `PrivateCommentController`**
+- - **Добавить маппинг `(List<CommentShortDto> - возвращаемое значение)
   GET /users/{userId}/comments?event={eventId}?commentState={commentState}&sort={sort}&from={from}&size={size}`** :
   получение всех или для конкретного `Event` комметариев пользователя, `sort = CREATED_ASC, (default)CREATED_DESC`
-- **Добавить маппинг `(CommentFullDto) GET /users/{userId}/comments/{commentId}`** :
+- - **Добавить маппинг `(CommentFullDto) GET /users/{userId}/comments/{commentId}`** :
   получение конкретного комментария.
-  <br><br>
+  <br>
+  <br>
 
-- **добавить в `PrivateEventController` маппинг `(List<CommentShortDto>)
+- - **добавить в `PrivateEventController` маппинг `(List<CommentShortDto>)
   GET /users/{userId}/events/{eventId}/comments?userState={userState}
   &commentState={commentState}&sort={sort}&from={from}&size={size}`** :
   получение всех комментариев для события с возможностью фильтрации,
   <br><br>
 
-- **создать `AdminCommentController`**
-- **Добавить маппинг `(List<CommentFullDto>)
+- - **создать `AdminCommentController`**
+- - **Добавить маппинг `(List<CommentFullDto>)
   GET /admin/comments/all?eventId={eventId}&userIds={[userIds]}&userState={userState}
   &commentState={commentState}&sort={sort}&from={from}&size={size}`** :
   получение комментариев c фильтрацией по событию, комментаторам, состоянию пользователя,
   состоянию комментария, с опциональными queryParams
   `sort = CREATED_ASC, (default)CREATED_DESC, COMMENTATOR_ID`.
-- **Добавить маппинг `(CommentFullDto) GET /admin/comments/{commentId}`** :
+- - **Добавить маппинг `(CommentFullDto) GET /admin/comments/{commentId}`** :
   получение конкретного комментария.
   <br>
   <br>
-#### Декларировать возможность изменения комментариев для пользователей, администраторов
-
-- **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commentId}`** : `CommentState = UPDATED`,
+- **Декларировать возможность изменения комментариев для пользователей, администраторов**
+- - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commentId}`** : `CommentState = UPDATED`,
   принимает `NewCommentDto`, проверка userId = commentatorId, комментарии со статусом `MODERATED` редактировать
   запрещено(код 409).
-- **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/remove?event={eventId}`** :
+- - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/remove?event={eventId}`** :
   `CommentState = DELETED_BY_USER`, проверка userId = commentatorId, при маппинге `Comment` в DTO в поле `text`
   передавать `"removed"`
-- **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/restore?event={eventId}`** :
+- - **Добавить маппинг `(CommentShortDto) PATCH /users/{userId}/comments/{commenId}/restore?event={eventId}`** :
   только для комментариев с `CommentState = DELETED_BY_USER`, проверка userId = commentatorId,
   новый `CommentState = UPDATED`
-- **Добавить маппинг `PATCH /admin/comments/{commentId}/moderate`** : `CommentState = MODERATED`,
+- - **Добавить маппинг `PATCH /admin/comments/{commentId}/moderate`** : `CommentState = MODERATED`,
   принимает `NewCommentDto`
   <br>
   <br>
-#### Декларировать возможность удаления комментариев для администраторов
-
-- **Добавить маппинг `DELETE /admin/comments/{commentId}`**
+- **Декларировать возможность удаления комментариев для администраторов**
+- - **Добавить маппинг `DELETE /admin/comments/{commentId}`**
   <br>
   <br>
-#### Декларировать возможность сортировки подбоки событий по наиболее обсуждаемым
-
-- **Добавить `PublicSortType = MOST_DISCUSSED`**
+- **Декларировать возможность сортировки подбоки событий по наиболее обсуждаемым**
+- - **Добавить `PublicSortType = MOST_DISCUSSED`**
   <br>
   <br>
-#### Реализовать заявленную функциональность
-
-- **Имплементировать методы сервиса, репозиториев**
-- **Обработать ошибки** :
+- **Реализовать заявленную функциональность**
+- - **Имплементировать методы сервиса, репозиториев**
+- - **Обработать ошибки** :
 
 > Имя ошибки (код) <- сценарий возниконовения.<br>
 > - CommentatorMismatchException (409) <- когда id пользователя не совпадает с id комментатора.<br>
@@ -178,11 +175,17 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - CommentNotFoundException (404)<- запрашиваемый комментарий не найден в БД.<br>
 > - CommentsAreNotAllowedException (409) <- комментарии не разрешены для размещения для данного события.
 
-  <br>
-  <br>
-#### Тестирование
+- **Тестирование**
+- - **Юнит-тестирование**
+- - **Постман тестирование**
+    <br>
+    <br>
+- **Деплой**
 
-- **Юнит-тестирование**
-- **Постман тестирование**
-
-#### Деплой
+> [!TIP]
+> Highlights!
+> - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
+    есть класс [CustomRepositoryImpl.java](/ewm-app/src/main/java/ru/practicum/ewmapp/util/CustomRepository.java),
+    который выделился в результате рефакторинга написанных репозиториев для сущностей Event и Comment.
+    Для сущности Event можно посмотреть репозиторий [до рефакторинга](https://github.com/AleksandrGermanov/java-explore-with-me/blob/6eb749305e1c5fc4a9310addea8c5895e7996ca1/ewm-app/src/main/java/ru/practicum/ewmapp/event/repository/CustomEventRepositoryImpl.java#L1)
+    и [текущую версию](/ewm-app/src/main/java/ru/practicum/ewmapp/event/repository/CustomEventRepositoryImpl.java)
