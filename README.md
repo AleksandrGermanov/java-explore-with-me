@@ -185,7 +185,9 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > [!TIP]
 > Highlights!
 > - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
-    есть класс [CustomRepositoryImpl.java](/ewm-app/src/main/java/ru/practicum/ewmapp/util/CustomRepository.java),
+    есть класс [CustomRepository.java](/ewm-app/src/main/java/ru/practicum/ewmapp/util/CustomRepository.java),
     который выделился в результате рефакторинга написанных репозиториев для сущностей Event и Comment.
+    Это самый сложный рефакторинг, который я писал до этого момента, с применением концепций параметризованных типов,
+    функциональных интерфейсов, вложенных классов.
     Для сущности Event можно посмотреть репозиторий [до рефакторинга](https://github.com/AleksandrGermanov/java-explore-with-me/blob/6eb749305e1c5fc4a9310addea8c5895e7996ca1/ewm-app/src/main/java/ru/practicum/ewmapp/event/repository/CustomEventRepositoryImpl.java#L1)
     и [текущую версию](/ewm-app/src/main/java/ru/practicum/ewmapp/event/repository/CustomEventRepositoryImpl.java)
