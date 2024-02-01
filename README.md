@@ -14,6 +14,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 
 >[!IMPORTANT]
 > Проект реализован на Java SE 11
+>
 > Для запуска пректа нужно:
 > 
 > 1. Склонировать репозиторий
@@ -21,7 +22,7 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - mvn install
 > - docker compose up
 > 3. Проверить, что все контейнеры запущены (несмотря на то, что в `docker-compose.yml` прописаны зависимости, 
-> иногда запуск сервисов предшествует запусук ДБ, и сервисы завершаются с ошибкой).
+> иногда запуску сервисов предшествует запусук ДБ, и сервисы завершаются с ошибкой).
 > 4. Если контерйнеры не работают, воспользуйтесь коммандами
 > - docker container start stats-server
 > - docker container start ewm-service
@@ -94,9 +95,6 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
     есть пример [StringToEnumConverterFactory](/ewm-app/src/main/java/ru/practicum/ewmapp/util/StringToEnumConverterFactory.java).
     Код взят [отсюда](https://www.baeldung.com/spring-type-conversions "https://www.baeldung.com/spring-type-conversions") с небольшим, но важным исправлением,
     которое делает  сгенерированные конвертеры нечувствительными к регистру.
-> - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
-    находится класс-аггрегатор [ThrowWhen](/ewm-app/src/main/java/ru/practicum/ewmapp/util/ThrowWhen.java).
-    Пришлось пожертвовать конвенциональным названием класса в угоду читаемости кода.
 
 ---
 
