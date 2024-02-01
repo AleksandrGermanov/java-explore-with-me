@@ -12,6 +12,26 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 
 ---
 
+>[!IMPORTANT]
+> Проект реализован на Java SE 11
+> Для запуска пректа нужно:
+> 
+> 1. Склонировать репозиторий
+> 2. В терминале с поддержкой mvn и docker комманд набрать
+> - mvn install
+> - docker compose up
+> 3. Проверить, что все контейнеры запущены (несмотря на то, что в `docker-compose.yml` прописаны зависимости, 
+> иногда запуск сервисов предшествует запусук ДБ, и сервисы завершаются с ошибкой).
+> 4. Если контерйнеры не работают, воспользуйтесь коммандами
+> - docker container start stats-server
+> - docker container start ewm-service
+> 5. [Вот здесь](https://github.com/yandex-praktikum/java-explore-with-me/tree/main_svc/postman) есть 
+> postman-коллекции для проверки функциональности, которая есть в ТЗ. Их можно запустить.
+> 6. После того, как будет запущена хоть одна коллекция из п.5, произойдет популяция БД и [можно будет проверить](/postman)
+реализацию эндпоинтов третьего этапа (реализация собственной функциональности).
+
+---
+
 ### 1-й этап: Сервис статистики
 
 > [!NOTE]
@@ -187,7 +207,6 @@ Mockito, Postgresql, SLF4J (Logback), Git(github), Postman, Docker Compose.
 > - В пакете [util](/ewm-app/src/main/java/ru/practicum/ewmapp/util)
     есть класс [CustomRepository.java](/ewm-app/src/main/java/ru/practicum/ewmapp/util/CustomRepository.java),
     который выделился в результате рефакторинга написанных репозиториев для сущностей Event и Comment.
-    Это самый сложный рефакторинг, который я писал до этого момента, с применением концепций параметризованных типов,
-    функциональных интерфейсов, вложенных классов.
+    Были применены концепции параметризованных типов, функциональных интерфейсов, вложенных классов.
     Для сущности Event можно посмотреть репозиторий [до рефакторинга](https://github.com/AleksandrGermanov/java-explore-with-me/blob/6eb749305e1c5fc4a9310addea8c5895e7996ca1/ewm-app/src/main/java/ru/practicum/ewmapp/event/repository/CustomEventRepositoryImpl.java#L1)
     и [текущую версию](/ewm-app/src/main/java/ru/practicum/ewmapp/event/repository/CustomEventRepositoryImpl.java)
