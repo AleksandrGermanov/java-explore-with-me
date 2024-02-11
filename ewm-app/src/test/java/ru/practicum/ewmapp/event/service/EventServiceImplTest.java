@@ -100,9 +100,9 @@ class EventServiceImplTest {
         category = new Category(0L, "category");
         categoryDto = new CategoryDto(0L, "category");
         location = new Location(0F, 0F);
-        createdOn = LocalDateTime.of(2020, 2, 2, 2, 2, 2);
-        publishedOn = LocalDateTime.of(2024, 2, 2, 2, 2, 2);
-        eventDate = LocalDateTime.of(2025, 2, 2, 2, 2, 2);
+        createdOn = LocalDateTime.parse(LocalDateTime.now().minusMonths(1).toString());
+        publishedOn = LocalDateTime.parse(LocalDateTime.now().minusDays(1L).toString());
+        eventDate = LocalDateTime.parse(LocalDateTime.now().plusYears(1).toString());
         event = new Event(0L, "annotation", category, Collections.emptyList(), createdOn,
                 "description", eventDate, user, location, true, 1, publishedOn, true, EventState.PENDING,
                 "title", 0L, null, null, null, null);
@@ -206,7 +206,7 @@ class EventServiceImplTest {
     @Test
     void updateEventByUserRequestReturnsValue() {
         UpdateEventUserRequest request = new UpdateEventUserRequest("annotation", 0L,
-                "description", "2024-02-02 02:02:02", location, true,
+                "description", "2124-02-02 02:02:02", location, true,
                 1, true, "title", UserStateAction.CANCEL_REVIEW);
 
         when(eventRepository.findById(0L))
